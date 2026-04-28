@@ -1,0 +1,26 @@
+{
+  "_comment": "Hook command paths assume this kit was copied to .github/ at the repo root (see README Quick Start). Adjust paths if you placed the kit elsewhere.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": ".github/hooks/scripts/session-start-check.sh",
+        "timeout": 5
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": ".github/hooks/scripts/kb-reminder.sh",
+        "timeout": 5
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": ".github/hooks/scripts/post-edit-check.sh",
+        "timeout": 10
+      }
+    ]
+  }
+}

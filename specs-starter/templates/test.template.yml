@@ -1,0 +1,101 @@
+# {Feature Name} — Test Cases
+# Maps 1:1 to acceptance criteria in spec.md
+
+feature: "{feature-name}"
+spec_ref: "specs/{feature-name}/spec.md"
+
+unit_tests:
+  - id: UT-1
+    ac_ref: "AC-1.1"
+    description: "{What this test validates}"
+    file: "__tests__/unit/{feature}.test.ts"
+    steps:
+      - action: "Call {function} with {input}"
+        expected: "{expected output}"
+
+integration_tests:
+  - id: IT-1
+    ac_ref: "AC-1.1"
+    description: "{API endpoint test}"
+    file: "__tests__/integration/{feature}.test.ts"
+    setup:
+      - "Mock auth session"
+    steps:
+      - action: "POST /api/{resource}"
+        payload: {}
+        expected_status: 200
+
+e2e_tests:
+  - id: E2E-1
+    ac_ref: "US-1"
+    description: "{Full user flow test}"
+    file: "__tests__/e2e/{feature}.spec.ts"
+    preconditions:
+      - "User is logged in"
+    steps:
+      - action: "Navigate to {page}"
+        expected: "{page loads with expected content}"
+
+# Role-based access tests (requires MOCK_AUTH_ENABLED=true)
+# Reference: skills/testing/references/mock-users.md
+role_tests:
+  enabled: true  # Set to false if feature has no auth/role requirements
+  mock_env: "MOCK_AUTH_ENABLED=true"
+
+  # Define which roles have access to this feature
+  access_matrix:
+    - route: "{API route or page path}"
+      method: "GET"
+      allowed_roles: ["admin", "owner", "editor"]
+      denied_roles: ["viewer", "guest"]
+      test_users:
+        allowed:
+          - { user_id: "user-03", role: "admin", provider: "google" }
+          - { user_id: "user-11", role: "owner", provider: "google" }
+          - { user_id: "user-26", role: "editor", provider: "google" }
+        denied:
+          - { user_id: "user-34", role: "viewer", provider: "google" }
+          - { user_id: "user-46", role: "guest", provider: "anonymous" }
+
+  # Provider-specific tests (OAuth flow variations)
+  provider_tests:
+    - id: PT-1
+      description: "{Feature works for Google OAuth user}"
+      user_id: "user-01"
+      provider: "google"
+      steps:
+        - action: "{action with Google-authenticated user}"
+          expected: "{expected outcome}"
+    - id: PT-2
+      description: "{Feature works for GitHub OAuth user}"
+      user_id: "user-12"
+      provider: "github"
+      steps:
+        - action: "{action with GitHub-authenticated user}"
+          expected: "{expected outcome}"
+    - id: PT-3
+      description: "{Feature works for phone-only user}"
+      user_id: "user-06"
+      provider: "phone"
+      steps:
+        - action: "{action with phone-authenticated user}"
+          expected: "{expected outcome}"
+
+  # Edge case auth tests
+  edge_cases:
+    - id: EC-1
+      description: "Expired session is rejected"
+      user_id: "user-48"
+      expected_status: 401
+    - id: EC-2
+      description: "Suspended user is rejected"
+      user_id: "user-49"
+      expected_status: 403
+    - id: EC-3
+      description: "Deleted account is rejected"
+      user_id: "user-50"
+      expected_status: 401
+    - id: EC-4
+      description: "Unverified email user is handled"
+      user_id: "user-21"
+      expected_status: 403  # or redirect to verify page

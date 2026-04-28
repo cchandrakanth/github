@@ -1,0 +1,83 @@
+{
+  "$schema": "./project-config.schema.json",
+  "_comment": "Project configuration file — edit values below to match your project. All agents, instructions, and prompts read from this file. Run the onboard agent to fill this interactively, or edit directly.",
+
+  "project": {
+    "name": "",
+    "description": ""
+  },
+
+  "techStack": {
+    "language": "",
+    "frontend": "",
+    "mobile": "",
+    "backend": "",
+    "serverless": ""
+  },
+
+  "database": {
+    "primary": "",
+    "orm": "",
+    "dataPattern": "",
+    "caching": ""
+  },
+
+  "auth": {
+    "provider": "",
+    "sessionMechanism": ""
+  },
+
+  "ui": {
+    "framework": "",
+    "responsiveTarget": "",
+    "designSystem": ""
+  },
+
+  "hosting": {
+    "platform": "",
+    "cicd": "",
+    "monorepo": ""
+  },
+
+  "testing": {
+    "unitFramework": "",
+    "e2eFramework": "",
+    "componentFramework": ""
+  },
+
+  "conventions": {
+    "importAlias": "",
+    "sourceDirectory": "",
+    "fileExtensions": []
+  },
+
+  "architecture": {
+    "patterns": [],
+    "codingStandards": [],
+    "securityRules": [],
+    "performanceTargets": []
+  },
+
+  "github": {
+    "repository": "",
+    "projectNumber": "",
+    "repositoryLabel": ""
+  },
+
+  "knowledgeBase": {
+    "enabled": true,
+    "rootPath": "knowledge-base",
+    "paths": {
+      "repoKnowledge": "knowledge-base/repo-knowledge",
+      "fixHistory": "knowledge-base/fix-history",
+      "automationTestFixes": "knowledge-base/automation-test-fixes"
+    },
+    "rules": {
+      "readBeforeAct": true,
+      "writeAfterNonTrivialFix": true,
+      "recordWorkarounds": true
+    }
+  },
+
+  "fileStructure": ""
+}

@@ -1,0 +1,20 @@
+{
+  "servers": {
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:githubToken}"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "id": "githubToken",
+      "type": "promptString",
+      "description": "GitHub Personal Access Token (needs repo, project, read:org scopes)",
+      "password": true
+    }
+  ]
+}

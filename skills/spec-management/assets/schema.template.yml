@@ -1,0 +1,62 @@
+# {Feature Name} — Database Schema
+# Defines database collections/tables, document/row shapes, indexes, and access rules
+
+feature: "{feature-name}"
+spec_ref: "specs/{feature-name}/spec.md"
+
+collections:
+  - path: "{collection_or_table_path}"
+    description: "{What this collection/table stores}"
+    document:
+      fields:
+        - name: "id"
+          type: "string"
+          required: true
+          description: "Document/row ID"
+        - name: "createdAt"
+          type: "timestamp"
+          required: true
+          description: "Creation timestamp"
+        - name: "updatedAt"
+          type: "timestamp"
+          required: true
+          description: "Last update timestamp"
+        # Add feature-specific fields below:
+        - name: "{fieldName}"
+          type: "{string|number|boolean|timestamp|array|map}"
+          required: true
+          description: "{What this field stores}"
+          validation: "{min/max/pattern constraints}"
+
+    indexes:
+      - fields: ["{field1}", "{field2}"]
+        order: [asc, desc]
+        purpose: "{What query this index supports}"
+
+    access_rules: |
+      # Define access control rules for this collection/table
+      # Example: Only authenticated user who owns the document can read/write
+
+# Changes to existing collections/tables (if any):
+modifications:
+  - collection: "{existing_collection}"
+    changes:
+      - action: "add_field"
+        field:
+          name: "{newFieldName}"
+          type: "{type}"
+          required: false
+          default: null
+          description: "{Why this field is being added}"
+        migration: "{How to handle existing documents/rows without this field}"
+
+# API routes that interact with this schema:
+api_routes:
+  - method: "GET"
+    path: "/api/{resource}"
+    reads_from: "{collection/table}"
+    description: "{What this route returns}"
+  - method: "POST"
+    path: "/api/{resource}"
+    writes_to: "{collection/table}"
+    description: "{What this route creates/updates}"
