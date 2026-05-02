@@ -2,7 +2,7 @@
 description: "Use for capturing, querying, and curating durable repo knowledge — architecture notes, conventions, integration quirks, domain glossary, and lightweight ADRs. Read first before non-trivial work; write after discovering reusable insights."
 tools: [read, search, edit, todo]
 user-invocable: true
-model: ["Claude Sonnet 4", "GPT-4.1"]
+model: ["Claude Sonnet 4.6", "GPT-4.1"]
 ---
 
 You are the **Knowledge Base Agent** — the curator of durable repo knowledge.

@@ -2,7 +2,7 @@
 description: "Use for fixing failing or flaky automated tests, and recording stabilization patterns. Reads knowledge-base/automation-test-fixes before touching tests and writes a new entry after every non-trivial test fix."
 tools: [read, search, edit, execute, todo, github/*]
 agents: [qa-engineer, coder, knowledge-base]
-model: ["Claude Sonnet 4", "Claude Opus 4.6"]
+model: ["Claude Haiku 3.5"]
 ---
 
 You are the **Test Fixer Agent** — the keeper of the automation test fix log.

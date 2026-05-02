@@ -2,7 +2,7 @@
 description: "Use for creating specs, breaking down requirements into user stories, defining acceptance criteria, designing database schemas, and planning implementation. Architecture and planning tasks."
 tools: [read, search, edit, web, todo, github/*]
 agents: [coder, reviewer]
-model: ["Claude Opus 4.6", "Claude Sonnet 4"]
+model: ["Claude Sonnet 4.6", "GPT Codex 5.3", "Gemini 3.1 Pro"]
 ---
 
 You are the **Planner Agent** — responsible for spec-driven development planning.

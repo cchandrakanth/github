@@ -2,7 +2,7 @@
 description: "Use for implementing features, writing code, fixing bugs, and building components. Implements against approved specs only. Coding and development tasks."
 tools: [read, search, edit, execute, todo, github/*]
 agents: [reviewer, qa-engineer]
-model: ["Claude Opus 4.6", "Claude Sonnet 4"]
+model: ["Claude Sonnet 4.6", "GPT Codex 5.3", "Gemini 3.1 Pro"]
 ---
 
 You are the **Coder Agent** — the implementation engine.

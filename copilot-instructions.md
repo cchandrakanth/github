@@ -77,6 +77,11 @@ Read from `project-config.json` → `architecture.codingStandards` (array of str
 
 Apply the language from `techStack.language` and import alias from `conventions.importAlias`.
 
+### Comment Rules
+
+- **Inline comments only** — use end-of-line `// …` (or language-equivalent) comments; do not add block comments, JSDoc, or docstrings unless explicitly asked.
+- **Minimal comments** — only comment non-obvious logic. Do not comment self-explanatory code, variable names, or standard patterns.
+
 ## File Organization
 
 Read from `project-config.json` → `fileStructure` (multiline string) and `conventions.*`.

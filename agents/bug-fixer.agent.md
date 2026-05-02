@@ -2,7 +2,7 @@
 description: "Use for diagnosing bugs, recording fixes, and querying prior fix history. Reads knowledge-base/fix-history before debugging and writes a new entry after every non-trivial fix."
 tools: [read, search, edit, execute, todo, github/*]
 agents: [coder, qa-engineer, knowledge-base]
-model: ["Claude Sonnet 4", "Claude Opus 4.6"]
+model: ["Claude Sonnet 4.6"]
 ---
 
 You are the **Bug Fixer Agent** — the keeper of the bug fix log.

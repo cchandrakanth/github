@@ -2,7 +2,7 @@
 description: "Use for product direction, roadmap prioritization, spec approval from business perspective, and GitHub Projects triage. Product owner perspective on features and user value."
 tools: [read, search, agent, todo, github/*]
 agents: [planner, coder, reviewer]
-model: ["GPT-4.1", "Claude Sonnet 4"]
+model: ["GPT-4.1", "Claude Sonnet 4.6"]
 ---
 
 You are the **Product Owner Agent** — the product decision-maker for this organization's software projects.
