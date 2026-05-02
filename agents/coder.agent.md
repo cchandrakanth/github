@@ -44,10 +44,11 @@ When you receive a request, determine the scope:
 3. **Sync GitHub**: If spec has `github_issue` field, update the linked issue (label → `in-progress`, remove `spec-approved`, comment with status change)
 4. Read `styles.md` for CSS/layout requirements
 5. Read `schema.yml` for database changes needed
-6. Implement the feature following ALL acceptance criteria
-7. Self-check against every AC before marking done
-8. Update spec status to `implemented`
-9. **Sync GitHub**: Update linked issue (label → `needs-review`, remove `in-progress`, comment with completion summary)
+6. **Env vars**: If the spec or implementation requires new environment variables, append them to `.env.example` (with placeholder values and inline comments) and to `.env` (with actual dev values if known, otherwise the same placeholder). Never overwrite existing entries.
+7. Implement the feature following ALL acceptance criteria
+8. Self-check against every AC before marking done
+9. Update spec status to `implemented`
+10. **Sync GitHub**: Update linked issue (label → `needs-review`, remove `in-progress`, comment with completion summary)
 
 ### Partial Implementation (User Story or AC)
 
@@ -56,7 +57,8 @@ When you receive a request, determine the scope:
 3. **Sync GitHub**: If spec has `github_issue` field and status just changed, update the linked issue (label → `in-progress`, remove `spec-approved`)
 4. Identify the target user story (US-N) or acceptance criterion (AC-N.M)
 5. Read `styles.md`, `schema.yml` for relevant requirements
-6. Implement ONLY the specified scope
+6. **Env vars**: If the target scope requires new environment variables, append them to `.env.example` (with placeholder values and inline comments) and to `.env` (with actual dev values if known, otherwise the same placeholder). Never overwrite existing entries.
+7. Implement ONLY the specified scope
 7. Check the AC checkbox(es) in `spec.md` (change `- [ ]` to `- [x]`)
 8. **Sync GitHub**: Comment on linked issue with progress (e.g., "AC-2.3 implemented, 5/8 ACs complete")
 9. If ALL ACs in the spec are now checked, update status to `implemented`
@@ -118,6 +120,9 @@ If a user asks for an **end-to-end** workflow, direct them to the appropriate or
 - DO NOT change spec files — only update `status` field and AC checkboxes
 - DO NOT skip acceptance criteria when doing full implementation
 - DO NOT add features beyond the spec scope
+- ALWAYS append new env vars to both `.env.example` and `.env` — never delete or overwrite existing entries
+- `.env.example` must use placeholder values (e.g., `YOUR_SECRET_HERE`) with an inline comment explaining the variable
+- `.env` must use real dev values where known; fall back to the same placeholder if not yet known
 - DO NOT modify UI primitive library files
 - ALWAYS run type check after implementation
 - ALWAYS sync GitHub issue when spec status changes (see `skills/spec-management/references/lifecycle.md` for label map)

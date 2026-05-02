@@ -66,6 +66,8 @@ For every new feature in `specs/{feature-name}/`, create:
 3. **test.yml** — from [template](../../specs/templates/test.template.yml)
 4. **schema.yml** — from [template](../../specs/templates/schema.template.yml)
 
+If the feature requires new environment variables, add an `## Environment Variables` section to `spec.md` listing each variable name, purpose, and whether it is required or optional. This list is the source of truth that `@coder` uses when updating `.env.example` and `.env`.
+
 ## Workflows
 
 ### New Feature (create spec)
