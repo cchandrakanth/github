@@ -52,8 +52,7 @@ End-to-end story delivery — from To Do to verified, with human checkpoints.
 ### Phase 2 — Implementation (Coder Agent)
 
 5. Hand off to **Coder Agent** to implement the spec:
-   - If user chose full spec → implement all user stories
-   - If user scoped to specific US/ACs → implement only those
+   - Implement all acceptance criteria per `implement-spec` prompt
 6. Update spec status to `in-progress`
 7. **Sync GitHub**: Update linked issue (label → `in-progress`)
 8. Track progress with todo list — one item per user story or AC group

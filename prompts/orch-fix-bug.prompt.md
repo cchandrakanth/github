@@ -58,7 +58,7 @@ End-to-end bug fix — from a reported bug to a merged-ready PR — with knowled
 6. Classify the fix: `true-fix` | `workaround` | `revert`
 7. Decide spec impact:
    - **Existing spec** → update its `spec.md` (add a bug-fix note under the relevant AC, or add a new AC if behavior changes)
-   - **No matching spec** → delegate to **`@planner`** to create a focused bug-fix spec under `specs/bug-<slug>/` with a single user story
+   - **No matching spec** → delegate to **`@planner`** to create a focused bug-fix spec under `specs/bug-<slug>/` using the `define-spec` prompt with a single user story
 8. Present a Diagnosis Report:
    ```
    ## Diagnosis
