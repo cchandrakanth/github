@@ -1,31 +1,55 @@
 ---
-description: "Orchestrated: Merge verified feature branch to dev and deploy — with human approval before merge and deploy"
+description: "Orchestrated: Code review, create PR, merge feature branch to dev, and move story to Testing — with human approval gates"
 tools: [read, search, edit, execute, todo, github/*]
 agents: [github-sync, reviewer]
-argument-hint: "Spec name or branch name (e.g., 'rh-long' or 'feature/rh-long')"
+argument-hint: "Spec name, branch name, or GitHub issue number (e.g., 'rh-long', 'story/42-rh-long', or '#42')"
 ---
 
-Merge a verified feature to the dev branch and deploy — with human gates before merge and deploy.
+Code review, PR creation, and dev branch merge — from **Developed → Testing**, with human gates.
+
+**Swim lane**: `Developed` → `Testing`
+**Stateful**: Re-running on the same issue resumes from the last recorded phase. Each phase appends a timestamped comment to the GitHub issue — nothing is overwritten.
+
+> **Scope**: This prompt reviews code, creates a PR, and merges the feature branch into dev. Playwright/integration QE testing is handled downstream by `orch-qe`. Production deploy is handled by `orch-po`.
 
 ## Orchestration Flow
 
 ```
-[1. Pre-flight Checks] → 🧑 HIL → [2. Create PR & Merge] → 🧑 HIL → [3. Deploy to Dev] → [4. Post-Deploy Verify]
+[1. Resume Check] → [2. Pre-flight] → 🧑 HIL → [3. Code Review] → [4. Create PR & Merge to Dev] → 🧑 HIL → [5. Deploy to Dev] → [6. Move to Testing]
 ```
 
 ## Instructions
 
+### Phase 0 — Resume Check (Stateful)
+
+> **First**: Read `project-config.json` → `github.repository`.
+
+If an issue number or branch was provided, fetch the issue and scan its comments for any prior `[orch-merge-deploy]` state comments.
+- If a prior state comment is found → display the last recorded phase and ask:
+  > "This story was last worked on at Phase {N} ({description}). Resume from there, restart from the beginning, or abort?"
+- If no prior state → proceed to Phase 1.
+
+**State is always appended as a new comment, never edited.** Use this format for every state update:
+```
+**[orch-merge-deploy] Phase {N} — {phase name}** · {ISO timestamp}
+- Status: in-progress | completed | blocked
+- Notes: {brief summary}
+```
+
+---
+
 ### Phase 1 — Pre-flight Checks
 
 1. Identify the target spec and its feature branch:
+   - If argument is an issue number: validate repo scope, read `specs/{name}/spec.md`, derive branch name
    - If argument is a spec name: read `specs/{name}/spec.md`, derive branch name
-   - If argument is a branch name: identify the associated spec
-   - If no argument: scan for specs with `status: verified` and list them
+   - If argument is a branch name: identify the associated spec and GitHub issue
+   - If no argument: scan GitHub Projects **Developed** column filtered to `github.repository` and list candidates
 2. Validate readiness:
-   - Spec status must be `verified` or `implemented` with passing review
-   - Check the feature branch exists: `git branch --list 'feature/{spec-name}*'`
+   - Spec status must be `implemented`
+   - Check the feature branch exists: `git branch --list '{branch}'`
    - Check for uncommitted changes: `git status`
-   - Check branch is up to date with dev: `git log dev..HEAD --oneline`
+   - Check branch is up to date with dev: `git log dev..{branch} --oneline`
 3. Run final sanity checks:
    - `npm run typecheck` (or project equivalent) — must pass
    - `npm run test` (or project equivalent) — must pass
@@ -35,18 +59,41 @@ Merge a verified feature to the dev branch and deploy — with human gates befor
    ## Pre-flight Report
    - **Spec**: {name} (status: {status})
    - **Branch**: {branch} ({N} commits ahead of dev)
+   - **GitHub Issue**: #{number}
    - **Type check**: ✅ / ❌
-   - **Tests**: ✅ {passed}/{total} / ❌ {failures}
+   - **Unit tests**: ✅ {passed}/{total} / ❌ {failures}
    - **Lint**: ✅ / ⚠️ {warnings}
    - **Uncommitted changes**: None / ⚠️ {count} files
    - **Conflicts with dev**: None / ⚠️ {details}
    ```
 
-### 🧑 Human Gate 1 — Approve Merge
+---
+
+### Phase 2 — Code Review (Reviewer Agent)
+
+5. Hand off to **Reviewer Agent** to run the review checklist:
+   - Spec compliance (every AC implemented)
+   - Code quality and standards
+   - Security rules (OWASP Top 10)
+   - Performance checks
+   - Responsive design
+6. Present review findings:
+   ```
+   ## Review Findings
+   | # | Severity | Finding | Location |
+   |---|----------|---------|----------|
+   | 1 | critical/warning/info | {description} | {file:line} |
+   
+   Verdict: ✅ Approved / ⚠️ Needs Changes
+   ```
+7. If critical findings exist, list them clearly and ask user whether to fix before proceeding
+
+### 🧑 Human Gate 1 — Approve Review & Merge
 
 > **Pause and ask the user:**
-> - "Pre-flight checks complete. Ready to create PR and merge to dev?"
-> - If any checks failed: "These checks did not pass: {list}. Proceed anyway or fix first?"
+> - "Pre-flight and code review complete. Ready to create PR and merge to dev?"
+> - Show: review verdict, any critical findings, test summary
+> - If checks failed or critical findings: "These issues were found: {list}. Fix first or proceed anyway?"
 > - If conflicts detected: "Merge conflicts found with dev. Resolve first?"
 > - Allow the user to: **Approve merge**, **Fix issues first**, or **Abort**
 
@@ -54,30 +101,42 @@ Merge a verified feature to the dev branch and deploy — with human gates befor
 
 ---
 
-### Phase 2 — Create PR & Merge to Dev
+### Phase 3 — Create PR & Merge to Dev
 
-5. Ensure all changes are committed:
+8. Ensure all changes are committed:
    - Stage any remaining changes: `git add -A`
    - Commit with message: `feat({spec-name}): implement {spec title}`
-6. Push the feature branch: `git push origin {branch}`
-7. Create a Pull Request via GitHub CLI:
-   ```bash
-   gh pr create \
-     --base dev \
-     --head {branch} \
-     --title "feat({spec-name}): {spec title}" \
-     --body "{PR body with AC checklist and test results}"
-   ```
-8. If CI checks are configured, wait for them (or note status)
-9. Merge the PR:
-   ```bash
-   gh pr merge {pr-number} --squash --delete-branch
-   ```
-10. Update local dev branch:
+9. Push the feature branch: `git push origin {branch}`
+10. Create a Pull Request via GitHub CLI:
+    ```bash
+    gh pr create \
+      --base dev \
+      --head {branch} \
+      --title "feat({spec-name}): {spec title} (#{issue})" \
+      --body "{PR body — see template below}"
+    ```
+    PR body must include:
+    - Linked issue (`Closes #<issue>` — moves to closed on merge)
+    - AC checklist with implementation status
+    - Unit test summary
+    - Review verdict and any accepted warnings
+    - Note: "Playwright/integration tests will be added by `orch-qe`"
+11. **Sync GitHub**: Append a state comment to the issue:
+    ```
+    **[orch-merge-deploy] Phase 3 — PR Created** · {timestamp}
+    - Status: in-progress
+    - PR: #{pr-number}
+    - Branch: `{branch}` → `dev`
+    ```
+12. Merge the PR (squash):
+    ```bash
+    gh pr merge {pr-number} --squash --delete-branch
+    ```
+13. Update local dev branch:
     ```bash
     git checkout dev && git pull origin dev
     ```
-11. Report merge result:
+14. Report merge result:
     ```
     ## Merge Complete
     - **PR**: #{number} — {title}
@@ -86,7 +145,7 @@ Merge a verified feature to the dev branch and deploy — with human gates befor
     - **Branch cleaned up**: ✅
     ```
 
-### 🧑 Human Gate 2 — Approve Deployment
+### 🧑 Human Gate 2 — Approve Deployment to Dev
 
 > **Pause and ask the user:**
 > - "Code is merged to dev. Ready to deploy to the dev environment?"
@@ -97,51 +156,48 @@ Merge a verified feature to the dev branch and deploy — with human gates befor
 
 ---
 
-### Phase 3 — Deploy to Dev Environment
+### Phase 4 — Deploy to Dev Environment
 
-12. Determine the deploy mechanism from `project-config.json` → `hosting.platform` and `hosting.cicd`:
-    - **Vercel**: Deployment auto-triggers on push to dev, just verify status
+15. Determine the deploy mechanism from `project-config.json` → `hosting.platform` and `hosting.cicd`:
+    - **Vercel**: Deployment auto-triggers on push to dev — verify status
     - **Netlify**: Same — verify deploy status via CLI or dashboard
     - **AWS/Custom**: Run the deploy script (e.g., `npm run deploy:dev`)
     - **GitHub Actions**: Trigger workflow if not auto-triggered
     - **Manual**: Provide the user with deploy instructions
-13. Monitor deployment:
-    ```bash
-    # Example for Vercel
-    vercel --prod=false    # deploys preview/dev
-    # Or check CI/CD status
-    gh run list --branch dev --limit 1
-    ```
-14. Wait for deployment to complete (with timeout)
+16. Monitor deployment and wait for completion (with timeout)
 
 ---
 
-### Phase 4 — Post-Deploy Verification
+### Phase 5 — Move to Testing
 
-15. Run smoke checks if a dev URL is available:
-    - Verify the app loads without errors
-    - Check the deployed feature is accessible
-16. Update spec status to `completed`
-17. **Sync GitHub**:
-    - Close the linked issue
-    - Remove all spec workflow labels
-    - Comment: "Deployed to dev environment. Feature delivered. ✅"
-    - Move to "Done" column on Projects board
+17. **Sync GitHub**: Append a state comment to the issue:
+    ```
+    **[orch-merge-deploy] Phase 5 — Deployed to Dev → Testing** · {timestamp}
+    - Status: completed
+    - PR: #{pr-number} merged to dev
+    - Dev deploy: {URL or CI link}
+    - Column: moved to **Testing**
+    - Next: run `orch-qe` to create Playwright tests and run full QE validation
+    ```
+    Then:
+    - Label → `deployed-dev`, remove `implemented`
+    - Move issue card to **Testing** column on Projects board
 18. Present final summary:
     ```
-    ## Deployment Complete ✅
+    ## Deployed to Dev ✅
     - **Spec**: {name}
     - **PR**: #{number} merged to dev
-    - **Deploy**: {environment URL or status}
-    - **GitHub Issue**: #{issue} — Closed
-    - **Spec status**: completed
+    - **Dev deploy**: {environment URL or status}
+    - **Review**: {verdict}
+    - **GitHub Issue**: #{number} → Testing column
     
-    🎉 Story fully delivered from To Do → Done
+    ➡️ Next: Run `orch-qe` to create Playwright/integration tests and validate the deployed feature.
     ```
 
 ## Error Recovery
 
 - If pre-flight checks fail: report specifics, offer to fix or skip
+- If code review finds critical issues: loop back to `orch-deliver-story` for targeted fixes
 - If merge conflicts: present conflict files, ask user to resolve manually or attempt auto-resolve
 - If PR creation fails: check `gh` CLI auth, offer manual PR link
 - If deployment fails: show error logs, suggest rollback with `git revert`, ask user
@@ -153,15 +209,16 @@ If deployment causes issues:
 1. `git revert {merge-commit} --no-edit`
 2. `git push origin dev`
 3. Re-deploy dev branch
-4. Reopen the GitHub issue
-5. Reset spec status to `verified`
+4. Update GitHub issue back to **Developed** column
+5. Reset spec status to `implemented`
 
 ## Constraints
 
 - ALWAYS pause at both human gates — never auto-merge or auto-deploy
-- ALWAYS show the diff summary before merging
+- ALWAYS show the review verdict before merging
 - ALWAYS use squash merge to keep dev history clean
+- ALWAYS append state comments — never overwrite previous state comments
 - NEVER force push to dev
-- NEVER deploy to production — this prompt targets dev environment only
+- NEVER deploy to production — this prompt targets dev environment only; production is `orch-po`
 - NEVER skip pre-flight checks
 - Track every phase in the todo list so the user sees progress

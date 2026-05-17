@@ -1,25 +1,44 @@
 ---
-description: "Orchestrated: Auto-fetch the top backlog story from GitHub, create branch, generate spec, get human approval, and move to Ready — optimized for solo developer"
+description: "Orchestrated: Auto-fetch the top To Do story from GitHub, create branch, generate spec, get human approval, and move to Ready — optimized for solo developer"
 tools: [read, search, edit, execute, todo, github/*]
 agents: [github-sync, planner]
-argument-hint: "Optional: GitHub issue number to target a specific story (e.g., '#42'). Omit to auto-pick the top backlog story."
+argument-hint: "Optional: GitHub issue number to target a specific story (e.g., '#42'). Omit to auto-pick the top To Do story."
 ---
 
-End-to-end story refinement — from Backlog to Ready (approved spec), with human checkpoints. Optimized for solo developers: automatically picks the highest-priority backlog story so you don't have to choose.
+End-to-end story refinement — from **To Do → Ready** (approved spec), with human checkpoints. Optimized for solo developers: automatically picks the highest-priority To Do story so you don't have to choose.
+
+**Swim lane**: `To Do` → `Ready`
+**Stateful**: Re-running on the same issue resumes from the last recorded phase. Each phase appends a timestamped comment to the GitHub issue — nothing is overwritten.
 
 ## Orchestration Flow
 
 ```
-[1. Auto-Pick Top Story] → 🧑 HIL (confirm or swap) → [2. Create Branch + Spec] → [3. Post Questions] → 🧑 HIL → [4. Approve & Move to Ready]
+[1. Resume Check] → [2. Auto-Pick Top Story] → 🧑 HIL (confirm or swap) → [3. Create Branch + Spec] → [4. Post Questions] → 🧑 HIL → [5. Approve & Move to Ready]
 ```
 
 **This prompt's output feeds into `orch-deliver-story` which picks up approved specs.**
 
 ## Instructions
 
-### Phase 1 — Auto-Pick Top Priority Story
+### Phase 0 — Resume Check (Stateful)
 
-> **First**: Read `project-config.json` → `github.repository` to get the current repo (e.g., `acme/mobile-app`). All issue filtering is scoped to this repo.
+> **First**: Read `project-config.json` → `github.repository`.
+
+If an issue number was provided, fetch the issue and scan its comments for any prior `[orch-refine-story]` state comments.
+- If a prior state comment is found → display the last recorded phase and ask:
+  > "This story was last worked on at Phase {N} ({description}). Resume from there, restart from the beginning, or abort?"
+- If no prior state → proceed to Phase 1.
+
+**State is always appended as a new comment, never edited.** Use this format for every state update:
+```
+**[orch-refine-story] Phase {N} — {phase name}** · {ISO timestamp}
+- Status: in-progress | completed | blocked
+- Notes: {brief summary}
+```
+
+---
+
+### Phase 1 — Auto-Pick Top Priority Story
 
 1. If an argument was provided (e.g., `#42`), fetch that specific GitHub issue:
    - **Validate repo link**: Check the issue's repository matches `github.repository` AND it carries the `github.repositoryLabel` label (if configured)
@@ -31,13 +50,13 @@ End-to-end story refinement — from Backlog to Ready (approved spec), with huma
      ```
    - If valid → use this issue, skip priority sorting
 2. If no argument, fetch the **top priority story** automatically:
-   - Query GitHub Projects **Backlog** column filtered to `github.repository` (and `github.repositoryLabel` if set)
+   - Query GitHub Projects **To Do** column filtered to `github.repository` (and `github.repositoryLabel` if set)
    - Exclude issues already labeled `spec-approved`, `in-progress`, or `spec-review`
    - Order by priority:
      1. Issues with a milestone — earliest due date wins
      2. Then oldest open issue by number (ascending)
    - Select the **first result** — do not present a list
-   - If no matching issues found → **STOP**: "No backlog stories found for `{github.repository}`. Add issues to the Backlog column and link them to this repo."
+   - If no matching issues found → **STOP**: "No To Do stories found for `{github.repository}`. Add issues to the To Do column and link them to this repo."
 3. Parse the issue **title prefix** to determine issue type:
    | Prefix | Type | Action |
    |--------|------|--------|
@@ -48,7 +67,7 @@ End-to-end story refinement — from Backlog to Ready (approved spec), with huma
 4. Fetch the full issue (title, body, labels, milestone, assignee)
 5. Display a brief card:
    ```
-   ## Top Backlog Story
+   ## Top To Do Story
    - **Issue**: #{number} — {title (without prefix)}
    - **Type**: [Feature] / [User Story] / [AC] / auto-detected
    - **Repository**: {github.repository}
@@ -67,7 +86,7 @@ End-to-end story refinement — from Backlog to Ready (approved spec), with huma
 > - **Issue number provided** → fetch that issue, run repo validation, then proceed
 > - **'abort'** → stop
 
-This gate is intentionally lightweight — as a solo developer you just need a quick sanity check, not a full selection menu. If the story already has a spec in `review` status, note it and skip to Phase 3.
+This gate is intentionally lightweight — as a solo developer you just need a quick sanity check, not a full selection menu. If the story already has a spec in `review` status, note it and skip to Phase 4.
 
 ---
 
@@ -91,9 +110,15 @@ This gate is intentionally lightweight — as a solo developer you just need a q
    - Map issue requirements to numbered user stories (US-1, US-2, ...) and acceptance criteria (AC-N.M)
    - Add `github_issue: {issue-number}` to spec.md frontmatter
    - Set `status: draft`
-8. **Sync GitHub**: Update the issue:
-   - Add label `spec-draft`
-   - Comment: "Spec created from issue. Branch: `story/{issue-number}-{slug}`"
+8. **Sync GitHub**: Append a state comment to the issue:
+   ```
+   **[orch-refine-story] Phase 2 — Branch & Spec Created** · {timestamp}
+   - Status: completed
+   - Branch: `story/{issue-number}-{slug}`
+   - Spec: `specs/{feature-name}/`
+   - Label added: `spec-draft`
+   ```
+   Then add label `spec-draft`.
 9. Review the generated spec for completeness:
    - Are all requirements from the issue covered?
    - Are ACs specific and testable?
@@ -125,7 +150,14 @@ This gate is intentionally lightweight — as a solo developer you just need a q
     Once questions are resolved, approve the spec to move this story to Ready.
     ```
 12. Update spec status to `review`
-13. **Sync GitHub**: Update issue (label → `spec-review`, remove `spec-draft`)
+13. **Sync GitHub**: Append a state comment to the issue:
+    ```
+    **[orch-refine-story] Phase 3 — Spec Under Review** · {timestamp}
+    - Status: in-progress
+    - Label: `spec-review`
+    - Open questions: {count}
+    ```
+    Then update labels (add `spec-review`, remove `spec-draft`).
 14. Present the spec summary and questions to the user in chat:
     ```
     ## Spec Summary
@@ -170,15 +202,18 @@ This gate is intentionally lightweight — as a solo developer you just need a q
     git commit -m "spec({feature-name}): approved spec for #{issue-number}"
     git push origin story/{issue-number}-{slug}
     ```
-17. **Sync GitHub**: Update the issue:
+17. **Sync GitHub**: Append a state comment to the issue:
+    ```
+    **[orch-refine-story] Phase 4 — Spec Approved → Ready** · {timestamp}
+    - Status: completed
+    - Spec: `specs/{feature-name}/` (status: approved)
+    - Branch: `story/{issue-number}-{slug}`
+    - Column: moved to **Ready**
+    - Next: run `orch-deliver-story` to implement this story
+    ```
+    Then:
     - Label → `spec-approved`, remove `spec-review`
     - Move issue card to **Ready** column on Projects board
-    - Comment:
-      ```
-      **Status → approved**
-      Spec approved and committed to branch `story/{issue-number}-{slug}`.
-      Ready for implementation — pick up with `orch-deliver-story`.
-      ```
 18. Present final summary:
     ```
     ## Story Ready ✅
@@ -198,6 +233,17 @@ This gate is intentionally lightweight — as a solo developer you just need a q
 - If spec folder already exists: read existing spec, offer to update vs. recreate
 - If Planner Agent returns incomplete spec: fill gaps with `[TBD]` markers and flag in questions
 - At any point the user can say "abort" to stop the orchestration
+
+## Constraints
+
+- ALWAYS pause at both human gates — never auto-approve a spec
+- ALWAYS post questions on the GitHub issue so stakeholders can see them
+- ALWAYS create the branch before writing spec files
+- ALWAYS append state comments to the issue — never edit previous state comments
+- NEVER set spec to `approved` without explicit human approval
+- NEVER modify existing specs from other features
+- NEVER implement code — this prompt only produces specs (implementation is `orch-deliver-story`)
+- Track every phase in the todo list so the user sees progress
 
 ## Constraints
 
