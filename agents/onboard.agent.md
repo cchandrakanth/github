@@ -122,7 +122,7 @@ Skill references are project-agnostic by design. **Do not edit skill files** as 
 
 ### Step 5: Bootstrap the knowledge base
 
-Verify `knowledge-base/` exists with the three subfolders (`repo-knowledge/`, `fix-history/`, `automation-test-fixes/`) and each has its `README.md` and `TEMPLATE.md`. If anything is missing, recreate from this kit. Do not pre-fill entries — agents add them as work happens.
+Verify `knowledge-base/` exists at the **project root** (not inside `.github/`) with the three subfolders (`repo-knowledge/`, `fix-history/`, `automation-test-fixes/`) and each has its `README.md` and `TEMPLATE.md`. If anything is missing, recreate from the kit's `knowledge-base/` template. Do not pre-fill entries — agents add them as work happens.
 
 ### Step 6: Verify hook + MCP setup
 

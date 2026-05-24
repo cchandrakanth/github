@@ -120,7 +120,7 @@ Rules:
 
 ## Knowledge Base (read-first / write-after)
 
-Agents MUST consult `knowledge-base/` before non-trivial work and contribute back after.
+`knowledge-base/` lives at the **project root** (not inside `.github/`). Agents MUST consult it before non-trivial work and contribute back after.
 
 | Folder | Read before… | Written by |
 |--------|--------------|------------|

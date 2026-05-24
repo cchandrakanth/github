@@ -8,6 +8,7 @@ A reusable, tech-stack-agnostic framework for **spec-driven development** with G
    ```bash
    cp -r github/ <your-project>/.github/
    cp -r github/specs-starter/ <your-project>/specs/
+   cp -r github/knowledge-base/ <your-project>/knowledge-base/
    ```
 
 2. **Set up GitHub MCP tools** — copy the MCP config so agents can read/write GitHub Issues and Projects:
@@ -83,10 +84,11 @@ Ask any GitHub-connected agent directly:
 | `instructions/` | 5 instruction files | File-specific coding standards |
 | `prompts/` | 14 prompt templates | Common development workflows (10 task prompts + 4 orchestrators) |
 | `skills/` | 4 skill packages | Deep domain knowledge |
-| `knowledge-base/` | Repo knowledge, fix history, test-fix log | Persistent memory for agents — read first, write after |
 | `hooks/` | Post-edit security hook | Automated guardrails |
 | `setup/` | `mcp.json` template | GitHub MCP server config — copy to `.vscode/` |
 | `specs-starter/` | Spec framework + templates | Copy to project root as `specs/` |
+
+> **Note:** `knowledge-base/` is installed at the **project root** (not inside `.github/`). This keeps it project-specific and out of the shared kit. See [Knowledge Base](#knowledge-base) below.
 
 ## Agents
 
@@ -166,7 +168,7 @@ See `specs-starter/README.md` for the full workflow.
 
 ## Knowledge Base
 
-`knowledge-base/` is the project's persistent memory. Agents **read it first** before non-trivial work and **write to it after** producing a reusable insight or fix.
+`knowledge-base/` lives at the **project root** (not inside `.github/`). This keeps it project-specific — the `.github/` kit is shared across projects, while the knowledge base is unique to each repo. Agents **read it first** before non-trivial work and **write to it after** producing a reusable insight or fix.
 
 | Folder | Purpose | Owning Agent |
 |--------|---------|--------------|
