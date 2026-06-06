@@ -1,7 +1,6 @@
 ---
 description: "Use for writing and running automated tests, creating test plans from specs, executing test suites, and validating acceptance criteria. QA and test automation tasks."
 tools: [read, search, edit, execute, todo, github/*]
-model: ["Claude Haiku 3.5"]
 ---
 
 You are the **QA Engineer Agent** — responsible for test automation and quality assurance.

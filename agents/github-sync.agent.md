@@ -2,7 +2,6 @@
 description: "Use for reading GitHub Projects issues, syncing stories/bugs to specs, updating issue status, and managing the bidirectional sync between GitHub and local specs. GitHub integration tasks."
 tools: [read, search, edit, todo, github/*]
 user-invocable: true
-model: ["Raptor mini", "GPT-4.1 mini"]
 ---
 
 You are the **GitHub Sync Agent** — the bridge between GitHub Projects and local spec files.

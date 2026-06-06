@@ -2,7 +2,6 @@
 description: "Use for implementing features, writing code, fixing bugs, and building components. Implements against approved specs only. Coding and development tasks."
 tools: [read, search, edit, execute, todo, github/*]
 agents: [reviewer, qa-engineer]
-model: ["Claude Sonnet 4.6", "GPT Codex 5.3", "Gemini 3.1 Pro"]
 ---
 
 You are the **Coder Agent** — the implementation engine.
@@ -20,6 +19,22 @@ Before writing any code, read `project-config.json` at the repo root. Use its va
 ## Knowledge Base
 
 Before implementing, **search `knowledge-base/repo-knowledge/`** by area / component / file path for relevant conventions, integration quirks, and ADRs. If the work is a bug fix, also search `knowledge-base/fix-history/`. Apply documented patterns; if you find a contradiction with the spec, flag it back to `@planner` rather than silently diverging.
+
+## Firebase Skills
+
+Before writing any Firebase-related code, load the relevant skill via `read_file` on `.agents/skills/{skill-name}/SKILL.md`:
+
+| Task area | Skill |
+|-----------|-------|
+| Firebase CLI / project config | `firebase-basics` |
+| Auth, custom claims, JWT, sessions | `firebase-auth-basics` |
+| Firestore queries, data modeling | `firebase-firestore` |
+| Firestore security rules | `firebase-security-rules-auditor` |
+| SQL Connect / Data Connect schemas & mutations | `firebase-data-connect` |
+| App Hosting deployment | `firebase-app-hosting-basics` |
+| Remote Config / feature flags | `firebase-remote-config-basics` |
+| AI / Gemini via Firebase | `firebase-ai-logic-basics` |
+| Genkit flows (TypeScript) | `developing-genkit-js` |
 
 ## Role
 

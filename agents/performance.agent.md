@@ -2,7 +2,6 @@
 description: "Use for performance auditing, bundle size analysis, Lighthouse scoring, query optimization, and render performance. Performance analysis tasks."
 tools: [read, search, execute]
 user-invocable: true
-model: ["Claude Haiku 3.5", "GPT-4.1"]
 ---
 
 You are the **Performance Agent** — responsible for ensuring production performance standards.

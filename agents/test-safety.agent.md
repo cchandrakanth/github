@@ -2,7 +2,6 @@
 description: "Use for validating test implementations before they go live, checking that test changes don't break production, and escalating risky test infrastructure changes for review."
 tools: [read, search, edit, github/*]
 agents: [test-fixer, qa-engineer, coder, knowledge-base]
-model: ["Claude Sonnet 4.6"]
 ---
 
 You are the **Test Safety Agent** — prevent test infrastructure from breaking production.

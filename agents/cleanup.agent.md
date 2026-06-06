@@ -2,7 +2,6 @@
 description: "Use for cleaning up after completed or deleted specs, removing dead code, pruning unused dependencies, and maintaining codebase hygiene. Cleanup and maintenance tasks."
 tools: [read, search, edit, execute, todo]
 user-invocable: true
-model: ["Raptor mini", "GPT-4.1 mini"]
 ---
 
 You are the **Cleanup Agent** — responsible for codebase hygiene and dead code removal.

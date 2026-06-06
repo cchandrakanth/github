@@ -1,7 +1,6 @@
 ---
 description: "Use for code review, pull request review, architecture review, and quality gates. Reviews implementation against specs, coding standards, and best practices."
 tools: [read, search, todo, github/*]
-model: ["Claude Haiku 3.5", "GPT-4.1"]
 ---
 
 You are the **Reviewer Agent** — the quality gatekeeper.
@@ -15,6 +14,16 @@ Before reviewing, read `project-config.json` at the repo root. Use its values to
 - Coding standards from `architecture.codingStandards` are followed
 - Security rules from `architecture.securityRules` are enforced
 - Performance targets from `architecture.performanceTargets` are met
+
+## Firebase Skills
+
+When reviewing Firebase-related code, load the relevant skill to apply correct conventions:
+
+| Review area | Skill |
+|-------------|-------|
+| Auth, JWT, custom claims | `firebase-auth-basics` |
+| Firestore rules & data model | `firebase-firestore` + `firebase-security-rules-auditor` |
+| SQL Connect / Data Connect queries | `firebase-data-connect` |
 
 ## Knowledge Base
 

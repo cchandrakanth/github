@@ -118,6 +118,26 @@ Rules:
 - **Never force-push** to `dev`. Force-push is allowed only on your own feature/fix branch before review.
 - **Production promotion** (`dev → main`) is out of scope for this kit — wire your own promotion pipeline if you need it.
 
+## Firebase Skills
+
+Firebase skills are installed in `.agents/skills/`. All agents MUST load the relevant skill via `read_file` on `.agents/skills/{skill-name}/SKILL.md` **before** working on Firebase-related tasks.
+
+| Scenario | Skill to load |
+|----------|--------------|
+| Firebase CLI, project init, `firebase.json`, `.firebaserc` | `firebase-basics` |
+| Firebase Auth — sign-in, custom claims, JWT, RBAC | `firebase-auth-basics` |
+| Firestore — data modeling, queries, indexes, client SDK | `firebase-firestore` |
+| Firestore security rules — writing or auditing | `firebase-security-rules-auditor` |
+| Firebase SQL Connect / Data Connect — schemas, GQL mutations, type-safe SDK | `firebase-data-connect` |
+| Firebase App Hosting — Next.js/Angular deployment with backend | `firebase-app-hosting-basics` |
+| Firebase Hosting (classic) — static sites, SPAs | `firebase-hosting-basics` |
+| Remote Config — feature flags, dynamic config | `firebase-remote-config-basics` |
+| Firebase AI Logic — Gemini API, multimodal inference | `firebase-ai-logic-basics` |
+| Crashlytics — crash reporting, SDK setup | `firebase-crashlytics` |
+| Genkit (TypeScript/Node.js) — AI agents, flows, tools | `developing-genkit-js` |
+
+> **Boundary rule** (from `architecture.patterns`): Firebase Admin SDK on server only; Firebase client SDK on client only — never cross the boundary. PostgreSQL via SQL Connect is the source of truth; Firestore stores denormalized read projections only.
+
 ## Knowledge Base (read-first / write-after)
 
 `knowledge-base/` lives at the **project root** (not inside `.github/`). Agents MUST consult it before non-trivial work and contribute back after.
