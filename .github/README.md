@@ -6,9 +6,9 @@ A reusable, tech-stack-agnostic framework for **spec-driven development** with G
 
 1. **Copy** this folder into your new project:
    ```bash
-   cp -r github/ <your-project>/.github/
-   cp -r github/specs-starter/ <your-project>/specs/
-   cp -r github/knowledge-base/ <your-project>/knowledge-base/
+   cp -r .github/ <your-project>/.github/
+   cp -r .github/specs-starter/ <your-project>/specs/
+   cp -r .github/knowledge-base/ <your-project>/knowledge-base/   # knowledge-base lives at the project root, NOT inside .github/
    ```
 
 2. **Set up GitHub MCP tools** — copy the MCP config so agents can read/write GitHub Issues and Projects:

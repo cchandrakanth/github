@@ -1,0 +1,210 @@
+# Project Instructions (Claude Code)
+
+> This repo is dual-tooled: it works with **GitHub Copilot** (`.github/`) and **Claude Code** (`.claude/` + this file). Both toolchains share the same source of truth: **`.github/project-config.json`**.
+> Agents, commands, and skills MUST read `.github/project-config.json` to resolve technology choices, conventions, and project metadata. Do not hardcode technology-specific values — always derive them from the config.
+
+## Where things live (Claude Code)
+
+| Artifact | Location | Copilot equivalent |
+|----------|----------|--------------------|
+| Project memory | `CLAUDE.md` (this file) | `.github/copilot-instructions.md` |
+| Subagents | `.claude/agents/*.md` | `.github/agents/*.agent.md` |
+| Slash commands | `.claude/commands/*.md` | `.github/prompts/*.prompt.md` |
+| Skills | `.claude/skills/**/SKILL.md` | `.github/skills/**/SKILL.md` |
+| Path-scoped rules | `.claude/instructions/*.instructions.md` | `.github/instructions/*.instructions.md` |
+| MCP config | `.claude/.mcp.json.example` → copy to `.mcp.json` | `.github/setup/mcp.json` |
+| Config (shared) | `.github/project-config.json` | `.github/project-config.json` |
+
+Both trees are kept in sync — edit the Copilot source and re-run the conversion, or edit both.
+
+## Organization Intent
+
+Read from `.github/project-config.json` → `project.name` and `project.description`.
+
+## Tech Stack
+
+Read from `.github/project-config.json` → `techStack.*`, `database.*`, `auth.*`, `ui.*`, `hosting.*`, `testing.*`.
+
+| Layer | Config Key |
+|-------|-----------|
+| Language | `techStack.language` |
+| Frontend | `techStack.frontend` |
+| Mobile | `techStack.mobile` |
+| Backend | `techStack.backend` |
+| Serverless | `techStack.serverless` |
+| Database | `database.primary` |
+| ORM / Client | `database.orm` |
+| Auth | `auth.provider` |
+| Session | `auth.sessionMechanism` |
+| UI Framework | `ui.framework` |
+| Design System | `ui.designSystem` |
+| Hosting | `hosting.platform` |
+| CI/CD | `hosting.cicd` |
+| Unit Tests | `testing.unitFramework` |
+| E2E Tests | `testing.e2eFramework` |
+| Component Tests | `testing.componentFramework` |
+
+## Development Process: Spec-Driven Development
+
+Every feature, bug fix, or change follows this lifecycle:
+
+1. **Spec First** — No code without an approved spec in `specs/`
+2. **Human Approval** — Specs require explicit approval before implementation begins
+3. **Implementation** — Code against approved acceptance criteria only
+4. **Test** — Automated tests must pass per `test.yml` in the spec
+5. **Review** — Security + performance review before merge
+6. **Mark Complete** — Update spec status to `completed`
+
+### GitHub Issue Sync
+
+Every spec status transition MUST update the linked GitHub issue. Agents and commands are responsible for syncing bidirectionally:
+
+- **Spec → GitHub**: When spec status changes, update issue labels, assignee, and add a status comment
+- **GitHub → Spec**: When a GitHub issue is created/updated, the `github-sync` subagent creates or updates the matching spec
+
+GitHub Projects board: **Backlog → Ready → In progress → In review → Done**
+
+| Spec Status | GitHub Label | Board Column | Action |
+|-------------|-------------|-------------|--------|
+| `draft` | `spec-draft` | Backlog | Comment with spec link |
+| `review` | `spec-review` | Backlog | Assign to human reviewer |
+| `approved` | `spec-approved` | Ready | Ready for coder pickup |
+| `in-progress` | `in-progress` | In progress | Assign to coder |
+| `implemented` | `needs-review` | In review | Assign to QA |
+| `verified` | `verified` | In review | Assign to reviewer |
+| `completed` | *(close issue)* | Done | Ship it |
+| `disabled` | `disabled` | *(closed)* | Close as not-planned |
+
+See `.claude/skills/spec-management/references/lifecycle.md` for full transition rules and label map.
+
+See `specs/README.md` for the full spec structure and workflow.
+
+## Architecture Patterns
+
+Read from `.github/project-config.json` → `architecture.patterns` (array of strings).
+
+Apply these patterns when writing code. If the array is empty, use sensible defaults for the configured tech stack.
+
+## Coding Standards
+
+Read from `.github/project-config.json` → `architecture.codingStandards` (array of strings).
+
+Apply the language from `techStack.language` and import alias from `conventions.importAlias`.
+
+### Comment Rules
+
+- **Inline comments only** — use end-of-line `// …` (or language-equivalent) comments; do not add block comments, JSDoc, or docstrings unless explicitly asked.
+- **Minimal comments** — only comment non-obvious logic. Do not comment self-explanatory code, variable names, or standard patterns.
+
+## File Organization
+
+Read from `.github/project-config.json` → `fileStructure` (multiline string) and `conventions.*`.
+
+Use `conventions.sourceDirectory` as the root source folder. Use `conventions.importAlias` for import paths. Only process files with extensions from `conventions.fileExtensions`.
+
+## Security Rules
+
+Read from `.github/project-config.json` → `architecture.securityRules` (array of strings).
+
+Apply security rules specific to `auth.provider` and `database.primary`. If the array is empty, enforce OWASP Top 10 defaults.
+
+## Performance Rules
+
+Read from `.github/project-config.json` → `architecture.performanceTargets` (array of strings).
+
+Apply performance targets specific to `techStack.frontend` and `hosting.platform`. If the array is empty, use defaults (Lighthouse ≥ 90, FCP < 1.5s, TTI < 3.5s).
+
+## Branching & PR Conventions
+
+All work happens on a feature/fix branch off `dev`, lands via squash-merge PR, and is deployed by `/orch-merge-deploy`.
+
+| Workflow | Branch prefix | Owning command |
+|----------|--------------|----------------|
+| Story (spec → ship) | `story/{issue-number}-{slug}` | `/orch-refine-story` → `/orch-deliver-story` → `/orch-merge-deploy` |
+| Bug fix | `fix/{issue-or-slug}` | `/orch-fix-bug` → `/orch-merge-deploy` |
+| Automation test fix | `fix-tests/{slug}` | `/fix-automation-test` → `/orch-merge-deploy` |
+
+Rules:
+- **Base branch is always `dev`** — never branch off `main` / `master`.
+- **Squash-merge only** — keep `dev` history linear.
+- **Commit / PR prefix** mirrors conventional commits: `feat({area}): …`, `fix({area}): …`, `test({area}): …`, `spec({area}): …`, `docs(kb): …`.
+- **PR body** must link the GitHub issue (`Fixes #N` / `Refs #N`), summarize ACs covered, and link any new `knowledge-base/` entries.
+- **Never force-push** to `dev`. Force-push is allowed only on your own feature/fix branch before review.
+- **Production promotion** (`dev → main`) is out of scope for this kit — wire your own promotion pipeline if you need it.
+
+## Firebase Skills
+
+Firebase skills live in `.claude/skills/firebase/skills/`. Load the relevant skill via a file read on `.claude/skills/firebase/skills/{skill-name}/SKILL.md` **before** working on Firebase-related tasks.
+
+| Scenario | Skill to load |
+|----------|--------------|
+| Firebase CLI, project init, `firebase.json`, `.firebaserc` | `firebase-basics` |
+| Firebase Auth — sign-in, custom claims, JWT, RBAC | `firebase-auth-basics` |
+| Firestore — data modeling, queries, indexes, client SDK | `firebase-firestore` |
+| Firestore security rules — writing or auditing | `firebase-security-rules-auditor` |
+| Firebase SQL Connect / Data Connect — schemas, GQL mutations, type-safe SDK | `firebase-data-connect` |
+| Firebase App Hosting — Next.js/Angular deployment with backend | `firebase-app-hosting-basics` |
+| Firebase Hosting (classic) — static sites, SPAs | `firebase-hosting-basics` |
+| Remote Config — feature flags, dynamic config | `firebase-remote-config-basics` |
+| Firebase AI Logic — Gemini API, multimodal inference | `firebase-ai-logic-basics` |
+| Crashlytics — crash reporting, SDK setup | `firebase-crashlytics` |
+| Genkit (TypeScript/Node.js) — AI agents, flows, tools | `developing-genkit-js` |
+
+> **Boundary rule** (from `architecture.patterns`): Firebase Admin SDK on server only; Firebase client SDK on client only — never cross the boundary. PostgreSQL via SQL Connect is the source of truth; Firestore stores denormalized read projections only.
+
+## Knowledge Base (read-first / write-after)
+
+`knowledge-base/` lives at the **project root** (not inside `.github/` or `.claude/`). Agents MUST consult it before non-trivial work and contribute back after.
+
+| Folder | Read before… | Written by |
+|--------|--------------|------------|
+| `knowledge-base/repo-knowledge/` | Implementing, reviewing, or onboarding | `knowledge-base` subagent |
+| `knowledge-base/fix-history/` | Debugging or fixing a bug | `bug-fixer` subagent |
+| `knowledge-base/automation-test-fixes/` | Touching a failing or flaky test | `test-fixer` subagent |
+
+Rules:
+- **Search first.** Grep the relevant subfolder by keyword, file path, error message, or `tags:` frontmatter before proposing a fix or design.
+- **Write after.** When a fix or insight meets the "when to add an entry" criteria in `knowledge-base/README.md`, the owning agent appends a new file using the matching `TEMPLATE.md`.
+- **Be honest.** Workarounds, quarantined tests, and reverts are recorded with `fix_type: workaround` (or equivalent) so the debt stays visible.
+- **Cross-link.** Entries should link to related specs, GitHub issues, and other knowledge-base entries.
+
+## Path-Scoped Rules
+
+`.claude/instructions/` mirrors `.github/instructions/`. Each file has an `applyTo` glob in its frontmatter — consult the matching file before editing files of that type:
+
+| When editing… | Load |
+|---------------|------|
+| API routes (`**/api/**`) | `.claude/instructions/api-routes.instructions.md` |
+| UI components (`components/**`) | `.claude/instructions/components.instructions.md` |
+| Database / schema code | `.claude/instructions/database.instructions.md` |
+| Auth / session / OAuth code | `.claude/instructions/mock-auth.instructions.md` |
+| Spec files (`specs/**`) | `.claude/instructions/specs.instructions.md` |
+| Styles (`*.css`, `*.scss`) | `.claude/instructions/styling.instructions.md` |
+| Test files | `.claude/instructions/test-safety.instructions.md` |
+
+## Mock Auth & Multi-Role Testing
+
+Enable mock authentication for local development and testing by setting environment variables:
+
+```env
+MOCK_AUTH_ENABLED=true          # Activates mock auth (MUST also be non-production)
+MOCK_AUTH_DEFAULT_USER=user-01  # Auto-login user for dev server
+MOCK_AUTH_BYPASS_MFA=true       # Skip MFA in tests
+```
+
+### Safety Rules
+
+- Mock auth activates ONLY when `MOCK_AUTH_ENABLED=true` AND `NODE_ENV !== 'production'`
+- Production builds must tree-shake/exclude mock auth modules
+- Mock data uses `@mock.test` domain and `mock_` token prefixes
+- Mock auth helpers live in `__tests__/helpers/` — never in production source
+
+### Available Mock Users
+
+50 users across 10 roles (super-admin, admin, billing-admin, owner, manager, moderator, editor, viewer, support, guest) and 6 OAuth providers (Google, GitHub, Phone, Apple, Microsoft, Facebook). See `.claude/skills/testing/references/mock-users.md` for the full registry.
+
+### Test Coverage Requirements
+
+- Every protected route tested with: allowed role, denied role, unauthenticated, edge case
+- Critical flows tested with 2+ OAuth providers
+- Edge cases: expired session, banned user, unverified email, MFA enforcement

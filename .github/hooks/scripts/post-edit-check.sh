@@ -5,7 +5,8 @@
 
 INPUT=$(cat)
 
-FILE_PATH=$(echo "$INPUT" | grep -o '"filePath"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/"filePath"[[:space:]]*:[[:space:]]*"//;s/"$//')
+# Accept both filePath (Copilot) and file_path (Claude Code) tool-input keys.
+FILE_PATH=$(echo "$INPUT" | grep -oE '"(filePath|file_path)"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed -E 's/"(filePath|file_path)"[[:space:]]*:[[:space:]]*"//;s/"$//')
 
 if [ -z "$FILE_PATH" ]; then
   exit 0

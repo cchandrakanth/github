@@ -1,0 +1,44 @@
+{
+  "$comment": "Claude Code project settings. Hooks reuse the shared scripts in .github/hooks/scripts/ so hook logic has a single source of truth across both toolchains (Copilot uses .github/hooks/enforce-standards.json). The scripts resolve project-config.json from .github/ and accept both filePath and file_path tool-input keys.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.github/hooks/scripts/session-start-check.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.github/hooks/scripts/kb-reminder.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.github/hooks/scripts/post-edit-check.sh\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.github/hooks/scripts/test-safety-check.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
