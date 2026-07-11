@@ -10,6 +10,7 @@ import { useAutosave } from '@/hooks/useAutosave';
 import { RichTextEditor } from '@/components/editor/RichTextEditor';
 import { FolderSelector } from '@/components/folders/FolderSelector';
 import { TagPicker } from '@/components/tags/TagPicker';
+import { NoteReminders } from '@/components/reminders/NoteReminders';
 import { useIsWide } from '@/hooks/useIsWide';
 import type { Note } from '@/db/schema';
 
@@ -124,6 +125,7 @@ export default function NoteEditorScreen() {
             <Text className="text-xs text-muted-foreground">Tags</Text>
           </Pressable>
         </View>
+        <NoteReminders noteId={String(id)} />
         <TagPicker
           visible={tagPickerOpen}
           selectedIds={(noteTags ?? []).map((t) => t.id)}

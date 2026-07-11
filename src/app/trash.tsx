@@ -4,6 +4,7 @@ import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as notesRepo from '@/db/repositories/notesRepo';
+import { rescheduleForNote } from '@/lib/notifications';
 import { EmptyState } from '@/components/EmptyState';
 import { confirmAction } from '@/lib/confirm';
 import { relativeTime } from '@/lib/relativeTime';
@@ -36,7 +37,12 @@ export function TrashList() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Restore ${item.title || 'Untitled'}`}
-            onPress={() => void notesRepo.restoreNote(item.id).then(refresh)}
+            onPress={() =>
+              void notesRepo.restoreNote(item.id).then(async () => {
+                await rescheduleForNote(item.id); // EC-4: restore re-arms enabled reminders
+                refresh();
+              })
+            }
           >
             <Text className="text-primary">Restore</Text>
           </Pressable>

@@ -4,7 +4,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | approved |
+| **Status** | implemented |
 | **Priority** | high |
 | **Created** | 2026-07-11 |
 | **Updated** | 2026-07-11 |
@@ -100,6 +100,7 @@ Any note can carry reminders that fire **local push notifications** (expo-notifi
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-07-11 | Initial draft from onboarding decisions | planner (Claude) |
+| 2026-07-11 | Approved by product owner; implemented. v1 picker uses validated text inputs for date/time (platform-native pickers deferred to keep web + Expo Go parity); AC-2.1/E2E-3 wall-clock verification remains a manual device test | coder (Claude) |
 
 ## Bug Fixes
 
