@@ -82,7 +82,8 @@ describe('TrashList (IT-5 / AC-4.2)', () => {
 });
 
 describe('useAutosave (IT-1 / AC-1.2)', () => {
-  jest.useFakeTimers();
+  beforeAll(() => jest.useFakeTimers());
+  afterAll(() => jest.useRealTimers());
 
   function Probe({ save }: { save: (v: string) => void }) {
     const { schedule } = useAutosave<string>(save);

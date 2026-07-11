@@ -4,6 +4,7 @@ import { useIsWide } from '@/hooks/useIsWide';
 import { BottomTabBar } from '@/components/nav/BottomTabBar';
 import { SidePanel } from '@/components/nav/SidePanel';
 import { destinations } from '@/components/nav/destinations';
+import { FolderSection } from '@/components/folders/FolderSection';
 
 function activeNameFromPath(pathname: string): string {
   const match = destinations.find((d) => d.href !== '/' && pathname.startsWith(d.href));
@@ -21,7 +22,11 @@ export default function TabsLayout() {
 
   return (
     <View className="flex-1 flex-row bg-background">
-      {isWide && <SidePanel activeName={activeNameFromPath(pathname)} onPress={go} />}
+      {isWide && (
+        <SidePanel activeName={activeNameFromPath(pathname)} onPress={go}>
+          <FolderSection />
+        </SidePanel>
+      )}
       <View className="flex-1">
         <Tabs
           screenOptions={{ headerShown: false }}

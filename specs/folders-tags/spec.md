@@ -4,7 +4,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | approved |
+| **Status** | implemented |
 | **Priority** | medium |
 | **Created** | 2026-07-11 |
 | **Updated** | 2026-07-11 |
@@ -94,6 +94,7 @@ Organize notes two ways: **folders** (each note lives in at most one folder — 
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-07-11 | Initial draft from onboarding decisions | planner (Claude) |
+| 2026-07-11 | Approved by product owner; implemented. Folder filtering happens in-place on the Notes screen via `?folder=` route params instead of a separate `folder/[id]` route (same ACs, better mobile UX, deep-linkable) | coder (Claude) |
 
 ## Bug Fixes
 
