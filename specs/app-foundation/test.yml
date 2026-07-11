@@ -1,0 +1,85 @@
+# App Foundation — Test Cases
+# Maps 1:1 to acceptance criteria in spec.md
+
+feature: "app-foundation"
+spec_ref: "specs/app-foundation/spec.md"
+
+unit_tests:
+  - id: UT-1
+    ac_ref: "AC-1.2"
+    description: "TypeScript compiles with strict mode"
+    file: "CI step (npx tsc --noEmit)"
+    steps:
+      - action: "Run tsc --noEmit"
+        expected: "Exit code 0"
+  - id: UT-2
+    ac_ref: "AC-2.1"
+    description: "Migrations create all v1 tables"
+    file: "__tests__/unit/db-migrations.test.ts"
+    steps:
+      - action: "Open in-memory SQLite, run migrate()"
+        expected: "notes, folders, tags, note_tags, reminders, notes_fts tables exist"
+  - id: UT-3
+    ac_ref: "AC-2.2"
+    description: "Re-running migrations on an existing database is a no-op and preserves data"
+    file: "__tests__/unit/db-migrations.test.ts"
+    steps:
+      - action: "Migrate, insert a note, migrate again"
+        expected: "Note still present; no error"
+  - id: UT-4
+    ac_ref: "AC-2.3"
+    description: "SQLite driver is only imported inside src/db/"
+    file: "__tests__/unit/db-boundary.test.ts"
+    steps:
+      - action: "Static scan: grep imports of expo-sqlite/drizzle driver outside src/db/"
+        expected: "No matches"
+
+integration_tests:
+  - id: IT-1
+    ac_ref: "AC-3.1, AC-3.4"
+    description: "Bottom tab bar renders 4 destinations at narrow width, active tab highlighted"
+    file: "__tests__/component/adaptive-nav.test.tsx"
+    setup:
+      - "Mock useWindowDimensions to 390x844"
+    steps:
+      - action: "Render root layout"
+        expected: "Tab bar with Notes/Search/Reminders/Settings; active item has selected state"
+  - id: IT-2
+    ac_ref: "AC-3.2"
+    description: "Side panel renders (and tab bar hides) at wide width"
+    file: "__tests__/component/adaptive-nav.test.tsx"
+    setup:
+      - "Mock useWindowDimensions to 1280x800"
+    steps:
+      - action: "Render root layout"
+        expected: "Side panel with 4 destinations; no bottom tab bar"
+  - id: IT-3
+    ac_ref: "AC-3.3"
+    description: "Layout switches live when width crosses 768px without unmounting the active screen"
+    file: "__tests__/component/adaptive-nav.test.tsx"
+    steps:
+      - action: "Render at 1280px on Search screen with local state; update dimensions to 390px"
+        expected: "Bottom tabs appear; Search screen instance and its state preserved"
+
+e2e_tests:
+  - id: E2E-1
+    ac_ref: "US-1, US-3"
+    description: "App launches to Notes placeholder and all tabs navigate"
+    file: "__tests__/e2e/app-foundation.yml"
+    preconditions:
+      - "Fresh install (empty database)"
+    steps:
+      - action: "Launch app"
+        expected: "Notes screen visible"
+      - action: "Tap Search, Reminders, Settings tabs"
+        expected: "Each placeholder screen opens; active tab highlights"
+  - id: E2E-2
+    ac_ref: "AC-2.1, EC-2"
+    description: "First launch creates database; relaunch keeps it"
+    file: "__tests__/e2e/app-foundation.yml"
+    steps:
+      - action: "Launch, kill, relaunch app"
+        expected: "No migration error screen; app reaches Notes screen both times"
+
+role_tests:
+  enabled: false   # v1 has no authentication or roles (auth.provider = None)

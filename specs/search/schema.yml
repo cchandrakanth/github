@@ -1,0 +1,27 @@
+# Full-Text Search — Database Schema
+# No new tables. Consumes the `notes_fts` FTS5 table and its sync triggers
+# from the foundation schema.
+
+feature: "search"
+spec_ref: "specs/search/spec.md"
+
+schema_source: "specs/app-foundation/schema.yml"   # single source of truth for table shapes
+
+collections:
+  - path: "notes_fts (consumed)"
+    description: "FTS5 index over notes(title, body_text), unicode61 tokenizer with prefix indexes; synced by triggers on notes INSERT/UPDATE/DELETE defined in foundation migrations."
+    document:
+      fields: []   # see specs/app-foundation/schema.yml → notes_fts
+    indexes: []
+    access_rules: |
+      Repository contract (src/db/repositories/searchRepo.ts):
+        searchNotes(rawQuery, {limit=50}): SearchResult[]
+          # 1. escapeFtsQuery(rawQuery): quote each term as a string literal + trailing * for prefix match (EC-1)
+          # 2. SELECT against notes_fts JOIN notes ON rowid mapping,
+          #    WHERE notes.deleted_at IS NULL (AC-1.4)
+          #    ORDER BY bm25(notes_fts, 10.0, 1.0)   -- title weighted over body (AC-2.2)
+          # 3. snippet(notes_fts, ...) for highlighted excerpts (AC-2.1)
+        SearchResult = { noteId, title, snippetHtmlSafe, folderName?: string }
+      All queries parameterized; raw user input never concatenated into MATCH syntax.
+
+api_routes: []   # local-only app — repositories replace API routes

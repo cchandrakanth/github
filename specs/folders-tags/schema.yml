@@ -1,0 +1,30 @@
+# Folders & Tags — Database Schema
+# No new tables. Consumes `folders`, `tags`, `note_tags` from the foundation schema.
+
+feature: "folders-tags"
+spec_ref: "specs/folders-tags/spec.md"
+
+schema_source: "specs/app-foundation/schema.yml"   # single source of truth for table shapes
+
+collections:
+  - path: "folders / tags / note_tags (consumed)"
+    description: "Defined in app-foundation. This spec owns their repositories."
+    document:
+      fields: []   # see specs/app-foundation/schema.yml
+    indexes: []
+    access_rules: |
+      Repository contracts:
+      src/db/repositories/foldersRepo.ts:
+        createFolder(name): Folder                 # trim, reject empty, UNIQUE NOCASE → typed DuplicateNameError
+        renameFolder(id, name)
+        reorderFolders(orderedIds[])               # rewrites position
+        deleteFolder(id)                           # notes.folder_id → NULL (Unfiled) via ON DELETE SET NULL, then delete row
+        listFoldersWithCounts(): {folder, liveNoteCount}[]   # counts exclude deleted_at IS NOT NULL
+      src/db/repositories/tagsRepo.ts:
+        findOrCreateTag(name): Tag                 # case-insensitive reuse (EC-2); strips leading '#'
+        setNoteTags(noteId, tagIds[])              # replaces note_tags links atomically
+        listTags(): Tag[]
+        deleteTag(id)                              # cascades note_tags
+        listNotesByTag(tagId, {folderId?}): Note[] # composes with folder filter (AC-3.5), excludes trashed
+
+api_routes: []   # local-only app — repositories replace API routes

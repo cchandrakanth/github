@@ -1,0 +1,109 @@
+# Full-Text Search — Test Cases
+# Maps 1:1 to acceptance criteria in spec.md
+
+feature: "search"
+spec_ref: "specs/search/spec.md"
+
+unit_tests:
+  - id: UT-1
+    ac_ref: "AC-1.2"
+    description: "Prefix and case-insensitive matching across title and body"
+    file: "__tests__/unit/searchRepo.test.ts"
+    steps:
+      - action: "Seed note 'Groceries' with body 'buy milk'; searchNotes('groc')"
+        expected: "Note returned"
+      - action: "searchNotes('MILK')"
+        expected: "Note returned"
+  - id: UT-2
+    ac_ref: "AC-1.4"
+    description: "Trashed and hard-deleted notes are excluded from results"
+    file: "__tests__/unit/searchRepo.test.ts"
+    steps:
+      - action: "Soft-delete matching note; searchNotes(query)"
+        expected: "Empty"
+      - action: "Hard-delete note; searchNotes(query)"
+        expected: "Empty (FTS row removed by trigger)"
+  - id: UT-3
+    ac_ref: "AC-2.2"
+    description: "Title matches rank above body-only matches"
+    file: "__tests__/unit/searchRepo.test.ts"
+    steps:
+      - action: "Note A titled 'Budget', note B mentions 'budget' in body; searchNotes('budget')"
+        expected: "A before B"
+  - id: UT-4
+    ac_ref: "EC-1"
+    description: "FTS operator characters are treated as literals and never throw"
+    file: "__tests__/unit/searchRepo.test.ts"
+    steps:
+      - action: "searchNotes('\"'); searchNotes('a AND b'); searchNotes('note-*')"
+        expected: "No exception; literal-term results"
+  - id: UT-5
+    ac_ref: "EC-3"
+    description: "Index reflects note edits (trigger sync)"
+    file: "__tests__/unit/searchRepo.test.ts"
+    steps:
+      - action: "Update note body to add 'zanzibar'; searchNotes('zanzibar')"
+        expected: "Note returned"
+  - id: UT-6
+    ac_ref: "EC-4"
+    description: "Non-Latin and emoji content is findable"
+    file: "__tests__/unit/searchRepo.test.ts"
+    steps:
+      - action: "Seed note with 'привет' body; searchNotes('привет')"
+        expected: "Note returned"
+
+integration_tests:
+  - id: IT-1
+    ac_ref: "AC-1.1, AC-3.1"
+    description: "Debounced search-as-you-type from hint state"
+    file: "__tests__/component/search-screen.test.tsx"
+    setup:
+      - "Fake timers; seeded database"
+    steps:
+      - action: "Render Search tab"
+        expected: "Input focused; hint state visible"
+      - action: "Type 'gro', advance 250ms"
+        expected: "searchNotes called once with 'gro'; results rendered"
+  - id: IT-2
+    ac_ref: "AC-2.1, AC-2.4"
+    description: "Result row renders highlighted snippet and folder name"
+    file: "__tests__/component/search-screen.test.tsx"
+    steps:
+      - action: "Search matching a note in folder 'Home'"
+        expected: "Row shows highlighted term and 'Home' metadata"
+  - id: IT-3
+    ac_ref: "AC-3.2, AC-3.3, EC-2"
+    description: "No-results state, clear button, and stale-response protection"
+    file: "__tests__/component/search-screen.test.tsx"
+    steps:
+      - action: "Search 'xyzzy'"
+        expected: "No results state with query echoed"
+      - action: "Tap clear while a slow query is in flight"
+        expected: "Hint state; late results discarded; input still focused"
+
+e2e_tests:
+  - id: E2E-1
+    ac_ref: "US-1, US-2"
+    description: "Find a note by body text and open it"
+    file: "__tests__/e2e/search.yml"
+    preconditions:
+      - "Note 'Groceries' containing 'oat milk' exists"
+    steps:
+      - action: "Open Search tab, type 'oat'"
+        expected: "'Groceries' listed with highlighted snippet"
+      - action: "Tap result"
+        expected: "Editor opens on 'Groceries'"
+      - action: "Go back"
+        expected: "Search screen shows 'oat' query and results"
+
+performance_tests:
+  - id: PERF-1
+    ac_ref: "AC-1.3"
+    description: "Query latency with 10k seeded notes"
+    file: "__tests__/unit/search-performance.test.ts"
+    steps:
+      - action: "Seed 10,000 notes; time searchNotes('milk')"
+        expected: "< 200ms; EXPLAIN QUERY PLAN uses notes_fts (no full scan)"
+
+role_tests:
+  enabled: false   # v1 has no authentication or roles (auth.provider = None)

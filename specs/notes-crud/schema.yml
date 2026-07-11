@@ -1,0 +1,27 @@
+# Notes CRUD & Rich-Text Editor — Database Schema
+# No new tables. Consumes the `notes` table defined in the foundation schema.
+
+feature: "notes-crud"
+spec_ref: "specs/notes-crud/spec.md"
+
+schema_source: "specs/app-foundation/schema.yml"   # single source of truth for table shapes
+
+collections:
+  - path: "notes (consumed)"
+    description: "Defined in app-foundation. This spec owns all reads/writes via notesRepo."
+    document:
+      fields: []   # see specs/app-foundation/schema.yml → notes
+    indexes: []
+    access_rules: |
+      Repository contract (src/db/repositories/notesRepo.ts):
+        createNote(): Note                      # blank note, id generated client-side
+        updateNote(id, {title?, body_html?, body_text?, pinned?})   # bumps updated_at; sanitizes html upstream in src/lib/sanitizeHtml.ts
+        listNotes({folderId?}): Note[]          # deleted_at IS NULL, ORDER BY pinned DESC, updated_at DESC
+        getNote(id): Note | null
+        softDeleteNote(id)                      # sets deleted_at; caller cancels reminder notifications (AC-4.4)
+        restoreNote(id)                         # clears deleted_at
+        hardDeleteNote(id)                      # cascades to note_tags + reminders
+        listTrashedNotes(): Note[]              # deleted_at IS NOT NULL, ORDER BY deleted_at DESC
+        discardIfEmpty(id)                      # deletes row when title='' AND body_text='' (AC-1.3)
+
+api_routes: []   # local-only app — repositories replace API routes

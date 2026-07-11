@@ -1,0 +1,124 @@
+# Note Reminders & Local Notifications — Test Cases
+# Maps 1:1 to acceptance criteria in spec.md
+
+feature: "note-reminders"
+spec_ref: "specs/note-reminders/spec.md"
+
+unit_tests:
+  - id: UT-1
+    ac_ref: "AC-1.5"
+    description: "createReminder rejects a once-reminder in the past and kind/field mismatches"
+    file: "__tests__/unit/remindersRepo.test.ts"
+    steps:
+      - action: "createReminder({kind:'once', atDatetime: now - 1h})"
+        expected: "ValidationError"
+      - action: "createReminder({kind:'weekly', timeOfDay:'18:00'}) without weekday"
+        expected: "ValidationError"
+  - id: UT-2
+    ac_ref: "AC-1.3, AC-1.4"
+    description: "Multiple reminders per note persist with their notification ids"
+    file: "__tests__/unit/remindersRepo.test.ts"
+    steps:
+      - action: "Create daily 08:00 and weekly Sun 20:00 on one note; setNotificationId each; listByNote"
+        expected: "Both rows with stored ids"
+  - id: UT-3
+    ac_ref: "AC-2.1"
+    description: "schedule() builds correct expo-notifications triggers per kind"
+    file: "__tests__/unit/notifications.test.ts"
+    setup:
+      - "Mock expo-notifications"
+    steps:
+      - action: "schedule(daily 07:30)"
+        expected: "calendar trigger {hour:7, minute:30, repeats:true}"
+      - action: "schedule(weekly Monday 18:00)"
+        expected: "calendar trigger {weekday per platform mapping, hour:18, minute:0, repeats:true}"
+      - action: "schedule(once at datetime)"
+        expected: "date trigger at that datetime"
+  - id: UT-4
+    ac_ref: "AC-2.4, EC-1"
+    description: "reconcile() re-schedules missing notifications and cancels orphans"
+    file: "__tests__/unit/notifications.test.ts"
+    steps:
+      - action: "Enabled reminder whose id is absent from mocked OS schedules; reconcile()"
+        expected: "schedule called; new id stored"
+      - action: "Mocked OS schedule with no reminder row; reconcile()"
+        expected: "cancel called for orphan"
+      - action: "Fired once-reminder (past); reconcile()"
+        expected: "notification_id set NULL, not re-scheduled"
+  - id: UT-5
+    ac_ref: "AC-3.3, EC-5"
+    description: "reschedule cancels old id before scheduling; weekly-today-earlier schedules next week"
+    file: "__tests__/unit/notifications.test.ts"
+    steps:
+      - action: "reschedule(reminder with old id)"
+        expected: "cancel(oldId) then schedule → new id; never two live schedules"
+      - action: "schedule(weekly, today, time already passed)"
+        expected: "computed next fire time is next week"
+
+integration_tests:
+  - id: IT-1
+    ac_ref: "AC-1.1, AC-1.2"
+    description: "Picker flow with permission grant and denial paths"
+    file: "__tests__/component/reminder-picker.test.tsx"
+    setup:
+      - "Mock permission module"
+    steps:
+      - action: "Add reminder, pick Daily 07:30, save (permission granted)"
+        expected: "Reminder saved enabled; schedule called"
+      - action: "Repeat with permission denied"
+        expected: "Reminder saved with enabled=0; settings banner shown"
+  - id: IT-2
+    ac_ref: "AC-3.1"
+    description: "Reminders tab groups Today / Upcoming / Paused with schedule summaries"
+    file: "__tests__/component/reminders-tab.test.tsx"
+    steps:
+      - action: "Seed one firing today, one weekly later, one paused; render tab"
+        expected: "Rows in correct groups with summaries and next fire times"
+  - id: IT-3
+    ac_ref: "AC-3.2"
+    description: "Pause cancels notification; resume re-schedules"
+    file: "__tests__/component/reminders-tab.test.tsx"
+    steps:
+      - action: "Toggle row off"
+        expected: "cancel(oldId); enabled=0; row moves to Paused"
+      - action: "Toggle back on"
+        expected: "schedule called; new id stored"
+  - id: IT-4
+    ac_ref: "AC-3.4, EC-4"
+    description: "Deleting reminder or trashing its note cancels notifications; restore re-schedules"
+    file: "__tests__/component/reminders-tab.test.tsx"
+    steps:
+      - action: "Delete reminder"
+        expected: "cancel called; row gone"
+      - action: "Soft-delete a note with an enabled reminder; then restore it"
+        expected: "cancel on trash; schedule again on restore"
+
+e2e_tests:
+  - id: E2E-1
+    ac_ref: "US-1, AC-2.2"
+    description: "Set a once-reminder 2 minutes out; notification arrives with app killed and opens the note"
+    file: "__tests__/e2e/note-reminders.yml"
+    preconditions:
+      - "Physical device or emulator with notifications enabled"
+    steps:
+      - action: "Create note 'Take medicine', add Once reminder now+2min, kill app, wait"
+        expected: "Notification appears with note title"
+      - action: "Tap notification"
+        expected: "App opens on 'Take medicine' editor"
+  - id: E2E-2
+    ac_ref: "US-3"
+    description: "Manage flow: pause from Reminders tab, row moves to Paused"
+    file: "__tests__/e2e/note-reminders.yml"
+    steps:
+      - action: "Open Reminders tab, toggle a daily reminder off"
+        expected: "Row in Paused group; toggle reflects off state after app relaunch"
+  - id: E2E-3
+    ac_ref: "AC-2.1 (manual)"
+    description: "MANUAL: daily fires next morning; weekly fires on chosen weekday; verify across a device reboot (EC-1)"
+    file: "manual test plan — requires wall-clock time"
+    steps:
+      - action: "Set daily 07:30 + weekly Mon 18:00; observe across days incl. one reboot"
+        expected: "All fire at local wall-clock times; none double-fire"
+
+role_tests:
+  enabled: false   # v1 has no authentication or roles (auth.provider = None)

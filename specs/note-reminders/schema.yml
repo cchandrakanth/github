@@ -1,0 +1,37 @@
+# Note Reminders & Local Notifications — Database Schema
+# No new tables. Consumes the `reminders` table from the foundation schema.
+
+feature: "note-reminders"
+spec_ref: "specs/note-reminders/spec.md"
+
+schema_source: "specs/app-foundation/schema.yml"   # single source of truth for table shapes
+
+collections:
+  - path: "reminders (consumed)"
+    description: "Defined in app-foundation. This spec owns remindersRepo and the notification side-effect layer."
+    document:
+      fields: []   # see specs/app-foundation/schema.yml → reminders
+    indexes: []
+    access_rules: |
+      Repository contract (src/db/repositories/remindersRepo.ts) — pure data, no OS calls:
+        createReminder({noteId, kind, atDatetime?, timeOfDay?, weekday?}): Reminder   # validates shape per kind; rejects past once-datetimes (AC-1.5)
+        updateReminder(id, patch)
+        setEnabled(id, enabled, notificationId | null)
+        setNotificationId(id, notificationId | null)
+        deleteReminder(id)
+        listByNote(noteId): Reminder[]
+        listAll(): Reminder[]                        # for Reminders tab grouping + launch sweep
+
+      Notification side-effect layer (src/lib/notifications.ts) — only module importing expo-notifications:
+        ensurePermission(): 'granted' | 'denied'     # in-context prompt (AC-1.2)
+        schedule(reminder, note): notificationId     # once → date trigger; daily → calendar {hour,minute,repeats}; weekly → calendar {weekday,hour,minute,repeats}
+        cancel(notificationId)
+        reschedule(reminder, note): notificationId   # cancel + schedule atomically (AC-3.3)
+        reconcile()                                  # launch sweep (AC-2.4, EC-1, EC-2):
+                                                     #   for each enabled reminder: verify OS schedule exists else re-schedule;
+                                                     #   cancel OS schedules with no matching reminder row;
+                                                     #   mark fired 'once' reminders (at_datetime < now) notification_id=NULL
+        Notification payload data: { noteId } → deep link route /note/[id] (AC-2.2)
+      Platform guard: on web, schedule/cancel are no-ops returning null (EC-6).
+
+api_routes: []   # local-only app — repositories replace API routes

@@ -3,65 +3,98 @@
   "_comment": "Project configuration file — edit values below to match your project. All agents, instructions, and prompts read from this file. Run the onboard agent to fill this interactively, or edit directly.",
 
   "project": {
-    "name": "",
-    "description": ""
+    "name": "Improve My Notes App",
+    "description": "A mobile-first, offline-first personal notes app for capturing notes and daily/weekly activities. Notes support rich text, folders, and tags; any note can carry a one-off, daily, or weekly reminder that fires a local push notification — making it work like a lightweight reminder app for recurring routines. All data lives on-device in SQLite (no backend, no account required in v1). Built as a single universal React Native codebase via Expo: on phones navigation uses bottom tabs, on web/wide screens it switches to a persistent side panel."
   },
 
   "techStack": {
-    "language": "",
-    "frontend": "",
-    "mobile": "",
-    "backend": "",
-    "serverless": ""
+    "language": "TypeScript",
+    "frontend": "React Native Web (via Expo, web mode is secondary target)",
+    "mobile": "React Native (Expo SDK + Expo Router)",
+    "backend": "None (local-only app, no server in v1)",
+    "serverless": "None"
   },
 
   "database": {
-    "primary": "",
-    "orm": "",
-    "dataPattern": "",
-    "caching": ""
+    "primary": "SQLite (expo-sqlite)",
+    "orm": "Drizzle ORM (expo-sqlite driver, drizzle-kit migrations)",
+    "dataPattern": "Single-user, on-device storage (per-device isolation, no multi-tenancy)",
+    "caching": "None (SQLite on-device is the source of truth)"
   },
 
   "auth": {
-    "provider": "",
-    "sessionMechanism": ""
+    "provider": "None (v1 is single local user; auth may be added in a later spec)",
+    "sessionMechanism": "N/A"
   },
 
   "ui": {
-    "framework": "",
-    "responsiveTarget": "",
-    "designSystem": ""
+    "framework": "NativeWind (Tailwind CSS for React Native)",
+    "responsiveTarget": "Mobile-first",
+    "designSystem": "Custom (NativeWind utility classes + shared design tokens in tailwind.config)"
   },
 
   "hosting": {
-    "platform": "",
-    "cicd": "",
-    "monorepo": ""
+    "platform": "Expo EAS Build (iOS/Android binaries); Expo web export optional — no server hosting required",
+    "cicd": "GitHub Actions",
+    "monorepo": "No"
   },
 
   "testing": {
-    "unitFramework": "",
-    "e2eFramework": "",
-    "componentFramework": ""
+    "unitFramework": "Jest (jest-expo preset)",
+    "e2eFramework": "Maestro",
+    "componentFramework": "React Native Testing Library"
   },
 
   "conventions": {
-    "importAlias": "",
-    "sourceDirectory": "",
-    "fileExtensions": []
+    "importAlias": "@/",
+    "sourceDirectory": "src",
+    "fileExtensions": [".ts", ".tsx"]
   },
 
   "architecture": {
-    "patterns": [],
-    "codingStandards": [],
-    "securityRules": [],
-    "performanceTargets": []
+    "patterns": [
+      "1. Offline-first: SQLite (expo-sqlite) on-device is the single source of truth; no network layer in v1.",
+      "2. Repository pattern: all SQL lives in src/db/repositories/*; UI components never touch the database driver directly.",
+      "3. Drizzle ORM schema in src/db/schema.ts with drizzle-kit generated migrations applied on app start.",
+      "4. Expo Router file-based routing under src/app/; one universal codebase for iOS, Android, and web.",
+      "5. Adaptive navigation: bottom tab bar below the md breakpoint (<768px), persistent side panel at md and above (web/tablet/desktop).",
+      "6. Rich text stored as sanitized HTML in notes.body_html plus a derived plain-text column (notes.body_text) kept in sync for search.",
+      "7. Full-text search via SQLite FTS5 virtual table, kept in sync with notes through triggers or repository-level writes.",
+      "8. Local notifications via expo-notifications; every scheduled notification id is persisted on its reminder row so it can be cancelled/rescheduled deterministically.",
+      "9. Soft delete for notes (deleted_at column) with a Trash view; hard delete only from Trash.",
+      "10. State: React Query (TanStack Query) over repository functions for cache/invalidation; no global state library unless a spec requires it."
+    ],
+    "codingStandards": [
+      "TypeScript strict mode; no `any` unless justified with an inline comment.",
+      "Functional components with hooks only; no class components.",
+      "Style with NativeWind className utilities; reserve inline style objects for values that must be computed at runtime.",
+      "Import via the @/ alias from src/; no deep relative paths (../../..).",
+      "Repository functions are fully typed (Drizzle inferred types) and are the only place SQL/query-builder calls appear.",
+      "Screens live in src/app/ (Expo Router); reusable UI in src/components/; domain logic in src/lib/.",
+      "Inline `// comments` only for non-obvious logic; no block comments or JSDoc unless asked.",
+      "Conventional commit prefixes: feat(notes): …, fix(reminders): …, spec(search): …, test(folders): …"
+    ],
+    "securityRules": [
+      "Parameterized queries only (Drizzle/prepared statements); never interpolate user input into SQL strings.",
+      "Sanitize rich-text HTML on save and render inside the editor WebView only; never render note HTML with JavaScript enabled or load remote content from it.",
+      "Request notification permission in context (when the user sets their first reminder), with a clear rationale; handle denial gracefully.",
+      "No analytics, tracking, or network transmission of note content — the app is local-only in v1.",
+      "No secrets in the repository; EAS credentials stay in EAS/GitHub secrets.",
+      "Validate all user input at the repository boundary (e.g., non-empty folder names, valid reminder times) before it reaches SQLite."
+    ],
+    "performanceTargets": [
+      "Cold start to interactive note list < 2s on a mid-range Android device.",
+      "Note list scrolls at 60fps with 1,000+ notes (virtualized list, e.g. FlashList).",
+      "Search results render < 200ms for a 10,000-note database (FTS5 index, debounced input).",
+      "Editor keystroke latency < 50ms; autosave is debounced and never blocks typing.",
+      "All database mutations run off the UI thread (async expo-sqlite API)."
+    ]
   },
 
   "github": {
-    "repository": "",
-    "projectNumber": "",
-    "repositoryLabel": ""
+    "repository": "cchandrakanth/github",
+    "projectNumber": "N/A (issues-only sync; no Projects board)",
+    "repositoryLabel": "notes-app"
   },
 
   "knowledgeBase": {
@@ -79,5 +112,5 @@
     }
   },
 
-  "fileStructure": ""
+  "fileStructure": "src/\n├── app/                      # Expo Router routes (file-based)\n│   ├── _layout.tsx           # Root layout: adaptive nav (bottom tabs <768px, side panel ≥768px)\n│   ├── (tabs)/               # Tab/panel destinations\n│   │   ├── index.tsx         # Notes list (home)\n│   │   ├── search.tsx        # Search screen\n│   │   ├── reminders.tsx     # Reminders overview\n│   │   └── settings.tsx      # Settings\n│   ├── note/[id].tsx         # Note editor (create/edit)\n│   ├── folder/[id].tsx       # Notes filtered by folder\n│   └── trash.tsx             # Soft-deleted notes\n├── components/               # Reusable UI (NoteCard, TagChip, ReminderPicker, …)\n├── db/\n│   ├── schema.ts             # Drizzle schema (notes, folders, tags, note_tags, reminders)\n│   ├── migrations/           # drizzle-kit generated migrations\n│   └── repositories/         # notesRepo, foldersRepo, tagsRepo, remindersRepo, searchRepo\n├── lib/                      # Domain logic (notifications scheduling, html→text, date/recurrence)\n├── hooks/                    # React Query hooks wrapping repositories\n└── theme/                    # NativeWind tokens, dark/light palettes\n__tests__/\n├── unit/                     # Jest unit tests (repositories, lib)\n├── component/                # React Native Testing Library\n└── e2e/                      # Maestro flows (.yml)"
 }

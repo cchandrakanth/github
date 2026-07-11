@@ -1,0 +1,115 @@
+# Notes CRUD & Rich-Text Editor — Test Cases
+# Maps 1:1 to acceptance criteria in spec.md
+
+feature: "notes-crud"
+spec_ref: "specs/notes-crud/spec.md"
+
+unit_tests:
+  - id: UT-1
+    ac_ref: "AC-1.3"
+    description: "discardIfEmpty removes a note with empty title and body, keeps non-empty notes"
+    file: "__tests__/unit/notesRepo.test.ts"
+    steps:
+      - action: "Create blank note, call discardIfEmpty"
+        expected: "Row deleted"
+      - action: "Create note with title only, call discardIfEmpty"
+        expected: "Row kept"
+  - id: UT-2
+    ac_ref: "AC-2.4"
+    description: "HTML sanitizer strips script/iframe/on* attributes, keeps allow-listed formatting tags"
+    file: "__tests__/unit/sanitizeHtml.test.ts"
+    steps:
+      - action: "Sanitize '<b>hi</b><script>x()</script><p onclick=\"x\">p</p>'"
+        expected: "'<b>hi</b><p>p</p>'"
+  - id: UT-3
+    ac_ref: "AC-2.5"
+    description: "htmlToText projection extracts readable plain text (lists, checkboxes, headings)"
+    file: "__tests__/unit/htmlToText.test.ts"
+    steps:
+      - action: "Convert HTML with headings, lists, checklist"
+        expected: "Plain text with line breaks preserved, no tags"
+  - id: UT-4
+    ac_ref: "AC-3.1"
+    description: "listNotes orders pinned-first then updated_at DESC and excludes trashed notes"
+    file: "__tests__/unit/notesRepo.test.ts"
+    steps:
+      - action: "Seed pinned old note, unpinned new note, trashed note; listNotes()"
+        expected: "[pinned, unpinned]; trashed excluded"
+  - id: UT-5
+    ac_ref: "AC-4.1, AC-4.3"
+    description: "softDeleteNote hides note; hardDeleteNote cascades to note_tags and reminders"
+    file: "__tests__/unit/notesRepo.test.ts"
+    steps:
+      - action: "Soft delete a note with a tag and a reminder"
+        expected: "Note absent from listNotes, present in listTrashedNotes; tag link and reminder rows intact"
+      - action: "Hard delete the same note"
+        expected: "notes, note_tags, reminders rows all removed"
+
+integration_tests:
+  - id: IT-1
+    ac_ref: "AC-1.2"
+    description: "Editor autosaves within 1s of typing stopping"
+    file: "__tests__/component/note-editor.test.tsx"
+    setup:
+      - "Render editor with in-memory database; fake timers"
+    steps:
+      - action: "Type into body, advance timers 1s"
+        expected: "notesRepo.updateNote called once with latest content"
+  - id: IT-2
+    ac_ref: "AC-2.1, AC-2.3"
+    description: "Toolbar formatting round-trips through save/reload"
+    file: "__tests__/component/note-editor.test.tsx"
+    steps:
+      - action: "Apply bold + checklist, save, remount editor from database"
+        expected: "Rendered document identical (same normalized HTML)"
+  - id: IT-3
+    ac_ref: "AC-3.3, AC-3.4"
+    description: "Pin action moves note to top with pin indicator"
+    file: "__tests__/component/notes-list.test.tsx"
+    steps:
+      - action: "Long-press second note, tap Pin"
+        expected: "Note renders first with pin icon"
+  - id: IT-4
+    ac_ref: "AC-3.5"
+    description: "Empty state renders when database has no live notes"
+    file: "__tests__/component/notes-list.test.tsx"
+    steps:
+      - action: "Render list with empty database"
+        expected: "Empty-state prompt visible"
+  - id: IT-5
+    ac_ref: "AC-4.2"
+    description: "Trash screen restores and permanently deletes"
+    file: "__tests__/component/trash.test.tsx"
+    steps:
+      - action: "Tap Restore on a trashed note"
+        expected: "Note back in listNotes"
+      - action: "Tap Delete forever, confirm dialog"
+        expected: "hardDeleteNote called; row gone"
+
+e2e_tests:
+  - id: E2E-1
+    ac_ref: "US-1, US-2"
+    description: "Create → format → relaunch → content persisted"
+    file: "__tests__/e2e/notes-crud.yml"
+    preconditions:
+      - "Fresh install"
+    steps:
+      - action: "Tap FAB, type title 'Groceries', add checklist items, background 2s, relaunch app"
+        expected: "'Groceries' at top of list; checklist state intact when opened"
+  - id: E2E-2
+    ac_ref: "US-4"
+    description: "Delete → Trash → Restore flow"
+    file: "__tests__/e2e/notes-crud.yml"
+    steps:
+      - action: "Long-press note, Delete; open Settings → Trash; Restore"
+        expected: "Note leaves list, appears in Trash, returns to list after restore"
+  - id: E2E-3
+    ac_ref: "EC-2"
+    description: "Kill app mid-edit; last autosaved state survives"
+    file: "__tests__/e2e/notes-crud.yml"
+    steps:
+      - action: "Type paragraph, wait 1.5s, force-kill app, relaunch, open note"
+        expected: "Paragraph present, document not corrupted"
+
+role_tests:
+  enabled: false   # v1 has no authentication or roles (auth.provider = None)
