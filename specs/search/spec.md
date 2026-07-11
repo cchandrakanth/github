@@ -4,7 +4,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | approved |
+| **Status** | implemented |
 | **Priority** | medium |
 | **Created** | 2026-07-11 |
 | **Updated** | 2026-07-11 |
@@ -93,6 +93,7 @@ The Search tab finds notes as you type, matching against titles and body text us
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-07-11 | Initial draft from onboarding decisions | planner (Claude) |
+| 2026-07-11 | Approved by product owner; implemented (FTS5 + bm25 title boost, escaped queries, debounced screen; PERF-1 passes at 10k notes) | coder (Claude) |
 
 ## Bug Fixes
 

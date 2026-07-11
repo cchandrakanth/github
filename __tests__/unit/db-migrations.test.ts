@@ -37,7 +37,16 @@ describe('database migrations', () => {
     const executor = makeExecutor(sqlite);
     await runMigrations(executor);
     const broken = [...migrations, ['CREATE TABLE ok (id TEXT)', 'THIS IS NOT SQL']];
-    await expect(runMigrations(executor, broken)).rejects.toThrow();
+    // realm-safe error assertion (not instanceof / rejects.toThrow) — see
+    // knowledge-base/automation-test-fixes/2026-07-11-rejects-tothrow-flake.md
+    let error: unknown = null;
+    try {
+      await runMigrations(executor, broken);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).not.toBeNull();
+    expect(String((error as Error).message)).toMatch(/syntax error/i);
     expect(tableNames(sqlite)).not.toContain('ok'); // partial migration rolled back
     expect(sqlite.pragma('user_version', { simple: true })).toBe(migrations.length);
     sqlite.close();
