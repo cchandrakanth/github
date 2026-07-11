@@ -4,7 +4,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | approved |
+| **Status** | implemented |
 | **Priority** | high |
 | **Created** | 2026-07-11 |
 | **Updated** | 2026-07-11 |
@@ -112,6 +112,7 @@ The heart of the app: create, view, edit, and delete notes with a rich-text (WYS
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-07-11 | Initial draft from onboarding decisions | planner (Claude) |
+| 2026-07-11 | Approved by product owner; implemented (editor + autosave + trash; native WYSIWYG via tentap, plain-text web fallback per EC-5) | coder (Claude) |
 
 ## Bug Fixes
 
