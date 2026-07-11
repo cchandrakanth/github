@@ -9,7 +9,7 @@
 | **Created** | 2026-07-11 |
 | **Updated** | 2026-07-11 |
 | **Author** | planner (Claude) |
-| **GitHub Issue** | TBD |
+| **GitHub Issue** | [#2](https://github.com/cchandrakanth/github/issues/2) |
 
 ## Properties
 
