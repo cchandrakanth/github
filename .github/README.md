@@ -85,7 +85,7 @@ Ask any GitHub-connected agent directly:
 | `instructions/` | 5 instruction files | File-specific coding standards |
 | `prompts/` | 14 prompt templates | Common development workflows (10 task prompts + 4 orchestrators) |
 | `skills/` | 4 skill packages | Deep domain knowledge |
-| `hooks/` | Post-edit security hook | Automated guardrails |
+| `hooks/` | Guardrail hooks | Post-edit security check, test-safety check, spec-guard (AC checkbox policy), knowledge-base reminders |
 | `setup/` | `mcp.json` template | GitHub MCP server config — copy to `.vscode/` |
 | `specs-starter/` | Spec framework + templates | Copy to project root as `specs/` |
 

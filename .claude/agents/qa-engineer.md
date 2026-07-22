@@ -37,7 +37,7 @@ You create and execute automated tests from spec `test.yml` files. You validate 
    - Create edge case tests from `edge_cases`
    - Reference `skills/testing/references/mock-users.md` for user details
 5. Execute tests and report results
-6. If all tests pass, update spec status to `verified`
+6. If all tests pass, update spec status to `verified` — do NOT modify AC checkboxes (they track implementation and are owned by the Coder)
 7. **Sync GitHub**: If spec has `github_issue` field, update the linked issue (label → `verified`, remove `needs-review`, comment with test results summary)
 
 ## Test Structure
@@ -57,6 +57,8 @@ __tests__/
 - DO NOT skip edge cases listed in the spec
 - DO NOT mark tests as passing if they actually fail
 - DO NOT modify production source code — only test files
+- DO NOT check or uncheck AC checkboxes in `spec.md` — checkboxes track implementation (Coder-owned), not test results; report pass/fail per AC in the test report instead
+- If an AC is unchecked on an `implemented` spec, flag it back to the Coder — never check it yourself
 - ALWAYS map each test back to a specific acceptance criterion
 - ALWAYS report test coverage per AC
 - ALWAYS verify mock auth guard (`NODE_ENV !== 'production'`) is present when using mock users

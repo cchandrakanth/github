@@ -74,6 +74,7 @@ If an issue number was provided, fetch the issue and scan its comments for any p
 
 5. Hand off to **Coder Agent** to implement the spec:
    - Implement all acceptance criteria per `implement-spec` prompt
+   - Check each AC checkbox in `spec.md` (`- [ ]` → `- [x]`) as its code is implemented — do NOT defer checkboxes to the test phase
    - Follow `instructions/` rules for components, API routes, database, styling, etc.
 6. Update spec status to `in-progress`
 7. **Sync GitHub**: Append a state comment to the issue:
@@ -113,7 +114,7 @@ If an issue number was provided, fetch the issue and scan its comments for any p
     npm run test        # or project equivalent
     npm run typecheck
     ```
-14. Map test results to acceptance criteria
+14. Map test results to acceptance criteria — reporting only; test results never change AC checkboxes (those were checked at implementation in Phase 2)
 15. Present test report:
     ```
     ## Unit/Component Test Results

@@ -29,6 +29,16 @@ draft → review → approved → in-progress → implemented → verified → c
 - `completed` — Shipped and marked done
 - `disabled` — Spec deactivated (retained for history)
 
+## AC Checkbox Policy (guard)
+
+AC checkboxes (`- [ ] **AC-N.M**`) track **implementation**, not test results:
+
+- The Coder checks a box (`- [ ]` → `- [x]`) as soon as that AC's code is implemented — never wait for automation tests
+- `status: implemented` (and beyond) requires **every** AC checkbox to be `[x]`
+- Test outcomes are expressed via the `implemented` → `verified` status transition — QA, test, and review agents MUST NOT modify AC checkboxes
+- A spec still in `draft` / `review` / `approved` must have **no** checked ACs
+- The `spec-guard` hook warns on any status/checkbox mismatch
+
 ## Rules
 
 - No code changes without an approved spec

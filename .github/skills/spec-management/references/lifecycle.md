@@ -18,8 +18,8 @@ disabled  disabled    disabled                       disabled       disabled
 | review | approved | Human reviews and approves | **Yes** | Add label `spec-approved`, remove `spec-review` |
 | review | draft | Human requests changes | **Yes** | Add label `spec-draft`, remove `spec-review`, comment with requested changes |
 | approved | in-progress | Coder starts implementation | No | Add label `in-progress`, remove `spec-approved` |
-| in-progress | implemented | Coder finishes all ACs | No | Add label `needs-review`, remove `in-progress` |
-| implemented | verified | QA runs tests, all pass | No | Add label `verified`, remove `needs-review` |
+| in-progress | implemented | Coder finishes all ACs — every AC checkbox must be `[x]`, checked at implementation time (not after tests) | No | Add label `needs-review`, remove `in-progress` |
+| implemented | verified | QA runs tests, all pass — status change only; QA never modifies AC checkboxes | No | Add label `verified`, remove `needs-review` |
 | verified | completed | Reviewer approves + human confirms | **Yes** | Close issue, remove all spec labels |
 | any | disabled | Human decision | **Yes** | Add label `disabled`, close issue as not-planned |
 

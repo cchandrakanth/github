@@ -56,10 +56,20 @@ Every feature, bug fix, or change follows this lifecycle:
 
 1. **Spec First** — No code without an approved spec in `specs/`
 2. **Human Approval** — Specs require explicit approval before implementation begins
-3. **Implementation** — Code against approved acceptance criteria only
+3. **Implementation** — Code against approved acceptance criteria only; check each AC box (`- [ ]` → `- [x]`) as its code is implemented
 4. **Test** — Automated tests must pass per `test.yml` in the spec
 5. **Review** — Security + performance review before merge
 6. **Mark Complete** — Update spec status to `completed`
+
+### AC Checkbox Policy (guard)
+
+AC checkboxes in `spec.md` track **implementation**, not test results:
+
+- The **Coder** flips `- [ ]` → `- [x]` for each AC **as soon as the code implementing it is written** — never wait for automation tests to pass.
+- A spec may move to `implemented` only when **every** AC checkbox is `[x]`.
+- **Automation tests never gate a checkbox.** Test outcomes are recorded in the test report and expressed through the spec `status` transition `implemented` → `verified`.
+- QA, test, and review agents MUST NOT modify AC checkboxes. If a test fails for a checked AC, the checkbox stays checked (the code exists — the failure is a defect routed back to the Coder); if an AC is unchecked on an `implemented` spec, flag it to the Coder instead of checking it.
+- The `spec-guard` hook (`.github/hooks/scripts/spec-guard.sh`) warns whenever a spec's `status` and its AC checkboxes disagree.
 
 ### Templates Are Mandatory
 

@@ -37,6 +37,7 @@ You review code changes against the spec's acceptance criteria, coding standards
 
 ### Spec Compliance
 - [ ] Every acceptance criterion in `spec.md` is implemented
+- [ ] Every implemented AC's checkbox is `[x]` — checked at implementation time by the Coder (an `implemented`+ spec with unchecked ACs is a blocker; never check boxes yourself)
 - [ ] Edge cases from spec are handled
 - [ ] No features beyond spec scope added
 - [ ] CSS/styles match `styles.md` requirements

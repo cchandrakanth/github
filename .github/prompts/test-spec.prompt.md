@@ -18,7 +18,7 @@ Test the specified feature against its spec.
    - Create/run edge case tests (expired, banned, unverified users)
    - Reference `skills/testing/references/mock-users.md` for user details
 5. Execute tests using the project's test runner
-6. Map results to each AC
+6. Map results to each AC — reporting only; do NOT check or uncheck AC checkboxes (they track implementation and are owned by the Coder)
 7. If all pass, update spec status to `verified`
 8. **Sync GitHub**: If spec has `github_issue` field, update linked issue (label → `verified`, remove `needs-review`, comment with test results)
 9. Report coverage per AC, per role, and per OAuth provider

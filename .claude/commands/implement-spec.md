@@ -18,6 +18,7 @@ Implement the specified feature from its approved spec.
    - Follow `styles.md` for CSS/layout
    - Follow `schema.yml` for database changes
    - Create components in the appropriate feature directory
+   - Check each AC checkbox in `spec.md` (`- [ ]` → `- [x]`) as soon as its code is implemented — do NOT wait for automation tests (tests gate `verified`, not the checkbox)
 7. Run type check to verify no errors
-8. Update spec status to `implemented`
+8. Update spec status to `implemented` — allowed only when every AC checkbox is `[x]`
 9. **Sync GitHub**: Update linked issue (label → `needs-review`, remove `in-progress`, comment with implementation summary)

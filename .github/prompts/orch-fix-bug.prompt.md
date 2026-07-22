@@ -84,7 +84,7 @@ End-to-end bug fix — from a reported bug to a merged-ready PR — with knowled
 
 12. Update the affected spec:
     - Add a `## Bug Fixes` log entry in `spec.md` referencing the issue and the fix-history file (placeholder until Phase 6 writes the file)
-    - If a new AC was added → tick its checkbox once verified by tests
+    - If a new AC was added → tick its checkbox as soon as the fix implementing it is in place — automation tests gate `verified`, never the checkbox
     - Bump spec status if appropriate (do **not** auto-mark `completed`)
 13. **Sync GitHub** via `@github-sync`: comment on the issue with branch name + fix summary
 
