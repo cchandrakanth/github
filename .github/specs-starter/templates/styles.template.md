@@ -25,6 +25,7 @@
 | Component | Element | Class / Selector | Notes |
 |-----------|---------|-------------------|-------|
 | {ComponentName} | container | `className="..."` | {layout notes} |
+| {ComponentName} | title | `className="..."` | {typography notes} |
 
 ## Design Tokens
 
@@ -51,3 +52,9 @@
 - Color contrast: WCAG AA (4.5:1 for text)
 - Focus indicators: visible on all interactive elements
 - Screen reader: proper aria labels on custom controls
+
+## Animations
+
+| Element | Trigger | Animation | Duration |
+|---------|---------|-----------|----------|
+| {element} | {hover/mount/etc} | {description} | {ms} |

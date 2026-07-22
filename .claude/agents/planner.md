@@ -35,6 +35,14 @@ When designing schemas or writing implementation hints for Firebase features, lo
 | Hosting / deployment specs | `firebase-app-hosting-basics` |
 | AI / Genkit feature specs | `developing-genkit-js` |
 
+## MongoDB Skills
+
+When designing schemas or writing implementation hints for a MongoDB-backed feature (`database.primary` is MongoDB), load `.claude/skills/mongodb/skills/mongodb-schema-design/SKILL.md` first — it covers embed vs reference, anti-patterns (unbounded arrays, index explosion), validation, and migration patterns. For query-heavy specs also consult `mongodb-query-optimizer`.
+
+## Cloud Platform Skills (AWS / Azure / GCP)
+
+When a spec targets a cloud platform, load the matching architecture/onboarding skill first from `.claude/skills/{cloud}/skills/` — AWS: `aws-blocks`, `aws-serverless`, `aws-database`; Azure: `azure-prepare`, `azure-reliability`; GCP: `google-cloud-solution-n-tier-serverless-web-app`, `google-cloud-waf-reliability` — and reference the chosen services in the spec's implementation hints.
+
 ## Role
 
 You translate requirements, user stories, and bug reports into complete spec packages. You design the architecture, define acceptance criteria, and create all 4 required spec files. You also update existing specs when new user stories or acceptance criteria are added.
@@ -76,10 +84,10 @@ When the input is ambiguous or incomplete, **ask before writing**:
 
 For every new feature in `specs/{feature-name}/`, create:
 
-1. **spec.md** — from [template](../../specs/templates/spec.template.md)
-2. **styles.md** — from [template](../../specs/templates/styles.template.md)
-3. **test.yml** — from [template](../../specs/templates/test.template.yml)
-4. **schema.yml** — from [template](../../specs/templates/schema.template.yml)
+1. **spec.md** — from `.claude/skills/spec-management/assets/spec.template.md`
+2. **styles.md** — from `.claude/skills/spec-management/assets/styles.template.md`
+3. **test.yml** — from `.claude/skills/spec-management/assets/test.template.yml`
+4. **schema.yml** — from `.claude/skills/spec-management/assets/schema.template.yml`
 
 If the feature requires new environment variables, add an `## Environment Variables` section to `spec.md` listing each variable name, purpose, and whether it is required or optional. This list is the source of truth that `@coder` uses when updating `.env.example` and `.env`.
 

@@ -76,22 +76,22 @@ Every spec status transition MUST update the linked GitHub issue. Agents and pro
 - **Spec → GitHub**: When spec status changes, update issue labels, assignee, and add a status comment
 - **GitHub → Spec**: When a GitHub issue is created/updated, the `github-sync` agent creates or updates the matching spec
 
-GitHub Projects board: **Backlog → Ready → In progress → In review → Done**
+GitHub Projects board: **To Do → Ready → Developed → Testing → Ready To Deploy → Done**
 
 | Spec Status | GitHub Label | Board Column | Action |
 |-------------|-------------|-------------|--------|
-| `draft` | `spec-draft` | Backlog | Comment with spec link |
-| `review` | `spec-review` | Backlog | Assign to human reviewer |
+| `draft` | `spec-draft` | To Do | Comment with spec link |
+| `review` | `spec-review` | To Do | Assign to human reviewer |
 | `approved` | `spec-approved` | Ready | Ready for coder pickup |
-| `in-progress` | `in-progress` | In progress | Assign to coder |
-| `implemented` | `needs-review` | In review | Assign to QA |
-| `verified` | `verified` | In review | Assign to reviewer |
+| `in-progress` | `in-progress` | Ready | Assign to coder; card moves to Developed when implementation lands |
+| `implemented` | `needs-review` | Developed → Testing | Developed after `orch-deliver-story`; Testing after `orch-merge-deploy` merges to dev |
+| `verified` | `verified` | Ready To Deploy | QE verified (`orch-qe`); awaiting release via `orch-po` |
 | `completed` | *(close issue)* | Done | Ship it |
 | `disabled` | `disabled` | *(closed)* | Close as not-planned |
 
 See `skills/spec-management/references/lifecycle.md` for full transition rules and label map.
 
-See `specs/README.md` for the full spec structure and workflow.
+See `specs/README.md` for the full spec structure and workflow (created from `.github/specs-starter/README.md` when `specs/` doesn't exist yet).
 
 ## Architecture Patterns
 
@@ -130,11 +130,11 @@ Apply performance targets specific to `techStack.frontend` and `hosting.platform
 
 ## Branching & PR Conventions
 
-All work happens on a feature/fix branch off `dev`, lands via squash-merge PR, and is deployed by `/orch-merge-deploy`.
+All work happens on a feature/fix branch off `dev`, lands via squash-merge PR into `dev` (`/orch-merge-deploy`), is QE-verified (`/orch-qe`), and reaches production via a release PR (`/orch-po`).
 
 | Workflow | Branch prefix | Owning prompt |
 |----------|--------------|---------------|
-| Story (spec → ship) | `story/{issue-number}-{slug}` | `/orch-refine-story` → `/orch-deliver-story` → `/orch-merge-deploy` |
+| Story (spec → ship) | `story/{issue-number}-{slug}` | `/orch-refine-story` → `/orch-deliver-story` → `/orch-merge-deploy` → `/orch-qe` → `/orch-po` |
 | Bug fix | `fix/{issue-or-slug}` | `/orch-fix-bug` → `/orch-merge-deploy` |
 | Automation test fix | `fix-tests/{slug}` | `/fix-automation-test` → `/orch-merge-deploy` |
 
@@ -144,11 +144,11 @@ Rules:
 - **Commit / PR prefix** mirrors conventional commits: `feat({area}): …`, `fix({area}): …`, `test({area}): …`, `spec({area}): …`, `docs(kb): …`.
 - **PR body** must link the GitHub issue (`Fixes #N` / `Refs #N`), summarize ACs covered, and link any new `knowledge-base/` entries.
 - **Never force-push** to `dev`. Force-push is allowed only on your own feature/fix branch before review.
-- **Production promotion** (`dev → main`) is out of scope for this kit — wire your own promotion pipeline if you need it.
+- **Production promotion** (`dev → master`) is handled by `/orch-po` — it bundles Ready To Deploy stories into a release branch, PRs to master, and deploys to production.
 
 ## Firebase Skills
 
-Firebase skills are installed in `.agents/skills/`. All agents MUST load the relevant skill via `read_file` on `.agents/skills/{skill-name}/SKILL.md` **before** working on Firebase-related tasks.
+Firebase skills live in `.github/skills/firebase/skills/`. All agents MUST load the relevant skill via `read_file` on `.github/skills/firebase/skills/{skill-name}/SKILL.md` **before** working on Firebase-related tasks.
 
 | Scenario | Skill to load |
 |----------|--------------|
@@ -165,6 +165,60 @@ Firebase skills are installed in `.agents/skills/`. All agents MUST load the rel
 | Genkit (TypeScript/Node.js) — AI agents, flows, tools | `developing-genkit-js` |
 
 > **Boundary rule** (from `architecture.patterns`): Firebase Admin SDK on server only; Firebase client SDK on client only — never cross the boundary. PostgreSQL via SQL Connect is the source of truth; Firestore stores denormalized read projections only.
+
+## Playwright CLI Skill
+
+`playwright-cli` (from `@playwright/cli`) is a token-efficient browser-automation CLI for coding agents — persistent browser sessions, accessibility snapshots with element refs, cross-browser support. The skill lives at `.github/skills/playwright-cli/SKILL.md` — load it **before** any browser automation, UI verification, or Playwright test work (running, debugging, generating, or healing tests).
+
+| Scenario | Reference to load (under `.github/skills/playwright-cli/references/`) |
+|----------|------------------|
+| Run / debug Playwright tests | `playwright-tests.md` |
+| Generate tests from interactions (plan / generate / heal) | `test-generation.md` |
+| Mock network requests | `request-mocking.md` |
+| Multiple browser sessions | `session-management.md` |
+| Auth/session state (cookies, localStorage) | `storage-state.md` |
+| Execution traces | `tracing.md` |
+| Session videos | `video-recording.md` |
+| Run arbitrary Playwright code | `running-code.md` |
+| Element attributes not in snapshots | `element-attributes.md` |
+
+If the `playwright-cli` command is missing, use `npx playwright cli` when a local Playwright is installed, or install globally: `npm install -g @playwright/cli@latest`.
+
+## MongoDB Skills
+
+Official MongoDB agent skills (from [mongodb/agent-skills](https://github.com/mongodb/agent-skills)) live in `.github/skills/mongodb/skills/`. When `database.primary` in `project-config.json` is MongoDB (or a feature touches MongoDB/Atlas), load the relevant skill via a file read on `.github/skills/mongodb/skills/{skill-name}/SKILL.md` **before** working on the task:
+
+| Scenario | Skill to load |
+|----------|--------------|
+| Data modeling, embed vs reference, schema review/validation, SQL migration | `mongodb-schema-design` |
+| Slow queries, indexing, explain plans, Performance Advisor | `mongodb-query-optimizer` |
+| Client connection config — pools, timeouts, serverless/API patterns | `mongodb-connection` |
+| Writing find queries / aggregation pipelines from natural language | `mongodb-natural-language-querying` |
+| Atlas Search indexes, vector/AI-powered search & recommendations | `mongodb-search-and-ai` |
+| Atlas Stream Processing pipelines (Kafka, S3, HTTPS, Lambda) | `mongodb-atlas-stream-processing` |
+| Configuring the MongoDB MCP server | `mongodb-mcp-setup` |
+
+## Cloud Platform Skills (AWS / Azure / GCP)
+
+Official cloud-provider agent skills for app development live under `.github/skills/aws/skills/`, `.github/skills/azure/skills/`, and `.github/skills/gcp/skills/` (curated from [aws/agent-toolkit-for-aws](https://github.com/aws/agent-toolkit-for-aws), [microsoft/azure-skills](https://github.com/microsoft/azure-skills), and [google/skills](https://github.com/google/skills)). Pick the provider from `hosting.platform` / `techStack.serverless` in `project-config.json` (or the platform the feature explicitly targets) and load the relevant skill via a file read on `.github/skills/{cloud}/skills/{skill-name}/SKILL.md` **before** working on the task.
+
+| Scenario | AWS | Azure | GCP |
+|----------|-----|-------|-----|
+| Get started / auth to the platform | `signing-in-to-aws`, `launch-with-aws` | `azure-prepare` | `google-cloud-recipe-onboarding`, `google-cloud-recipe-auth`, `gcloud` |
+| Compute / containers / Kubernetes | `aws-compute`, `aws-containers` | `azure-compute`, `azure-kubernetes` | `cloud-run-basics`, `gke-basics`, `gke-app-onboarding` |
+| Serverless functions & APIs | `aws-serverless`, `connecting-lambda-to-api-gateway`, `debugging-lambda-timeouts` | `python-appservice-deploy` | `google-cloud-solution-n-tier-serverless-web-app` |
+| Databases & storage | `aws-database`, `connecting-lambda-to-dynamodb` | `azure-storage` | `cloud-sql-basics`, `alloydb-basics`, `bigquery-basics` |
+| Messaging / streaming | `aws-messaging-and-streaming` | `azure-messaging` | — |
+| IaC & deployment | `aws-cdk`, `aws-cloudformation`, `aws-deployment` | `azure-deploy`, `azure-validate`, `azure-upgrade` | `gke-basics` (golden-path refs) |
+| SDK usage in app code | `aws-sdk-js-v3-usage`, `aws-sdk-python-usage`, `aws-sdk-swift-usage` | — | — |
+| Auth / identity / app registration | `aws-iam` | `entra-app-registration` | `google-cloud-recipe-auth` |
+| Observability / diagnostics | `aws-observability` | `azure-diagnostics`, `appinsights-instrumentation` | `cloud-logging-query-generation`, `cloud-monitoring-metric-selection` |
+| Cost / reliability / security posture | `aws-billing-and-cost-management` | `azure-cost`, `azure-reliability`, `azure-compliance` | `google-cloud-waf-cost-optimization`, `google-cloud-waf-reliability`, `google-cloud-waf-security` |
+| AI features (managed LLM APIs) | `amazon-bedrock` | `azure-ai`, `azure-aigateway` | `gemini-api` |
+| Web/mobile app frameworks | `aws-amplify` | — | — |
+
+
+
 
 ## Knowledge Base (read-first / write-after)
 

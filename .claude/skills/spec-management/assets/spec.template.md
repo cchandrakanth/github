@@ -73,3 +73,11 @@ components: []               # List of component paths this spec creates/modifie
 | Date | Change | Author |
 |------|--------|--------|
 | {YYYY-MM-DD} | Initial draft | {author} |
+
+## Bug Fixes
+
+> Append one row whenever a bug fix touches this spec. Each row links to a `knowledge-base/fix-history/` entry created by `@bug-fixer`.
+
+| Date | Issue | Fix Type | KB Entry | Affected ACs |
+|------|-------|----------|----------|--------------|
+| {YYYY-MM-DD} | #{NN} | true-fix \| workaround \| revert | `knowledge-base/fix-history/<file>.md` | AC-N.M, ... |

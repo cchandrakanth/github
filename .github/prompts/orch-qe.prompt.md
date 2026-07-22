@@ -85,7 +85,7 @@ If an issue number was provided, fetch the issue and scan its comments for any p
 
 ### Phase 3 — Test Plan & Playwright Test Creation (QA Engineer Agent)
 
-9. Hand off to **QA Engineer Agent** to create the test plan and Playwright tests:
+9. Hand off to **QA Engineer Agent** to create the test plan and Playwright tests (load the `playwright-cli` skill — `.github/skills/playwright-cli/SKILL.md` — before writing or running any Playwright tests; see `references/playwright-tests.md` and `references/test-generation.md`):
    - Read `test.yml` for AC-to-test-case mappings
    - Read `knowledge-base/automation-test-fixes/` for patterns to avoid known flaky test issues
    - Create a `TEST-PLAN.md` in the spec folder:

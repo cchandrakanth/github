@@ -37,13 +37,25 @@ components: []               # List of component paths this spec creates/modifie
 - [ ] **AC-1.1**: {Specific, testable criterion}
 - [ ] **AC-1.2**: {Specific, testable criterion}
 
+### US-2: {Story Title}
+
+**As a** {role}
+**I want** {capability}
+**So that** {benefit}
+
+#### Acceptance Criteria
+
+- [ ] **AC-2.1**: {Specific, testable criterion}
+
 ## Edge Cases
 
 - **EC-1**: {What happens when...}
+- **EC-2**: {What happens when...}
 
 ## Out of Scope
 
 - {Explicitly excluded functionality}
+- {Things that look related but are NOT part of this spec}
 
 ## Dependencies
 
@@ -54,6 +66,7 @@ components: []               # List of component paths this spec creates/modifie
 > Questions must be resolved before status can move from `draft` to `review`.
 
 - [ ] **Q1**: {Unresolved question}
+- [ ] **Q2**: {Unresolved question}
 
 ## Change Log
 

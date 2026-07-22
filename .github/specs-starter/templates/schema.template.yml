@@ -12,7 +12,7 @@ collections:
         - name: "id"
           type: "string"
           required: true
-          description: "Primary identifier"
+          description: "Document/row ID"
         - name: "createdAt"
           type: "timestamp"
           required: true
@@ -21,6 +21,12 @@ collections:
           type: "timestamp"
           required: true
           description: "Last update timestamp"
+        # Add feature-specific fields below:
+        - name: "{fieldName}"
+          type: "{string|number|boolean|timestamp|array|map}"
+          required: true
+          description: "{What this field stores}"
+          validation: "{min/max/pattern constraints}"
 
     indexes:
       - fields: ["{field1}", "{field2}"]
@@ -29,7 +35,22 @@ collections:
 
     access_rules: |
       # Define access control rules for this collection/table
+      # Example: Only authenticated user who owns the document can read/write
 
+# Changes to existing collections/tables (if any):
+modifications:
+  - collection: "{existing_collection}"
+    changes:
+      - action: "add_field"
+        field:
+          name: "{newFieldName}"
+          type: "{type}"
+          required: false
+          default: null
+          description: "{Why this field is being added}"
+        migration: "{How to handle existing documents/rows without this field}"
+
+# API routes that interact with this schema:
 api_routes:
   - method: "GET"
     path: "/api/{resource}"

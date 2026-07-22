@@ -15,7 +15,7 @@ A reusable, tech-stack-agnostic framework for **spec-driven development** with G
 2. **Set up GitHub MCP tools** — copy the MCP config so agents can read/write GitHub Issues and Projects:
    ```bash
    mkdir -p <your-project>/.vscode
-   cp github/setup/mcp.json <your-project>/.vscode/mcp.json
+   cp .github/setup/mcp.json <your-project>/.vscode/mcp.json
    ```
    Then create a [GitHub Personal Access Token](https://github.com/settings/tokens) with **repo**, **project**, and **read:org** scopes. VS Code will prompt you for the token when an agent first uses a GitHub tool.
 
@@ -52,7 +52,7 @@ Agents use the **GitHub MCP server** (configured in `.vscode/mcp.json`) to inter
 
 | Action | Agent / Prompt | What Happens |
 |--------|---------------|-------------|
-| **Auto-pick top backlog story** | `/orch-refine-story` | Reads the GitHub Projects board "Backlog" column, picks highest-priority issue scoped to `github.repository` |
+| **Auto-pick top backlog story** | `/orch-refine-story` | Reads the GitHub Projects board "To Do" column, picks highest-priority issue scoped to `github.repository` |
 | **Pick a specific issue** | `/orch-refine-story #42` | Fetches issue #42 directly via MCP tools |
 | **List ready stories** | `/orch-deliver-story` | Reads the Projects board "Ready" column for approved stories |
 | **Triage & prioritize** | `@product-owner` | Reads all issues on the board filtered by `github.repositoryLabel` |
@@ -81,10 +81,10 @@ Ask any GitHub-connected agent directly:
 | Folder | Contents | Purpose |
 |--------|----------|---------|
 | `../project-config.json` | Single config file at the **repo root** | All project technology & convention settings |
-| `agents/` | 13 agent definitions | Role-based development agents |
-| `instructions/` | 5 instruction files | File-specific coding standards |
-| `prompts/` | 14 prompt templates | Common development workflows (10 task prompts + 4 orchestrators) |
-| `skills/` | 4 skill packages | Deep domain knowledge |
+| `agents/` | 14 agent definitions | Role-based development agents |
+| `instructions/` | 7 instruction files | File-specific coding standards |
+| `prompts/` | 14 prompt templates | Common development workflows (8 task prompts + 6 orchestrators) |
+| `skills/` | 10 skill packages | Deep domain knowledge (spec-management, testing, security-review, performance, firebase, playwright-cli, mongodb, aws, azure, gcp) |
 | `hooks/` | Guardrail hooks | Post-edit security check, test-safety check, spec-guard (AC checkbox policy), knowledge-base reminders |
 | `setup/` | `mcp.json` template | GitHub MCP server config — copy to `.vscode/` |
 | `specs-starter/` | Spec framework + templates | Copy to project root as `specs/` |
@@ -108,26 +108,27 @@ Ask any GitHub-connected agent directly:
 | `@knowledge-base` | Repo knowledge curator | Capture & query architecture / convention notes |
 | `@bug-fixer` | Bug diagnosis & fix log | Search prior fixes, record new ones in `knowledge-base/fix-history/` |
 | `@test-fixer` | Automation test stabilizer | Search & record fixes for flaky/failing tests |
+| `@test-safety` | Test-change guardrail | Validate risky test/infra changes before they land |
 
 ## Prompts
 
 | Prompt | What It Does |
 |--------|-------------|
 | `/onboard` | Interactive project setup wizard |
-| `/new-spec` | Create a new feature spec (4 files) |
-| `/update-spec` | Add user stories or modify ACs in existing spec |
-| `/implement-spec` | Implement an approved spec (full) |
-| `/implement-story` | Implement a specific user story or AC from a spec |
+| `/define-spec` | Create a new feature spec (4 files) or update an existing one |
+| `/implement-spec` | Implement an approved spec (full, single story, or single AC) |
 | `/review-spec` | Review implementation vs spec |
 | `/test-spec` | Run tests for a feature |
 | `/security-audit` | Security scan on file/feature/project |
 | `/project-status` | Dashboard of all specs and progress |
 | `/fix-automation-test` | Fix a failing/flaky test: read fix history, think beyond, stabilize, record, PR |
 | **Orchestrators** | |
-| `/orch-refine-story` | End-to-end: Backlog → approved spec. Fetches a GitHub issue, creates a branch, generates the full spec package via Planner, posts open questions, and gates on human approval before moving to Ready |
-| `/orch-deliver-story` | End-to-end: Ready → verified. Picks an approved story, implements via Coder, runs tests via QA Engineer, runs review via Reviewer — with human gates after test results and before marking verified |
+| `/orch-refine-story` | To Do → Ready. Fetches a GitHub issue, creates a branch, generates the full spec package via Planner, and gates on human approval |
+| `/orch-deliver-story` | Ready → Developed. Picks an approved story, implements code + unit/component tests via Coder — with human approval gates |
+| `/orch-merge-deploy` | Developed → Testing. Code review, PR, squash-merge feature branch to dev — with human gates before merge |
+| `/orch-qe` | Testing → Ready To Deploy. Integrated test plan + Playwright tests on a test branch, UI test run, manual testing sign-off, merge to dev |
+| `/orch-po` | Ready To Deploy → Done. Bundles verified stories into a release branch, PRs to master, deploys to production |
 | `/orch-fix-bug` | End-to-end bug fix: branch → KB-search → diagnose → fix → update spec → regression test → record + consolidate KB → PR |
-| `/orch-merge-deploy` | End-to-end: Verified → Done. Runs pre-flight checks, creates a PR, squash-merges to dev, triggers deployment, and closes the GitHub issue — with human gates before merge and before deploy |
 
 ## Customization
 
@@ -184,19 +185,29 @@ Each subfolder ships with a `README.md` and a `TEMPLATE.md`. See `knowledge-base
 Stitch orchestrators together for the full lifecycle:
 
 ```
-            ┌──────────────────────┐
-Backlog ──▶ │ /orch-refine-story   │ ──▶ Ready (approved spec)
-            └──────────────────────┘
-                       │
-                       ▼
-            ┌──────────────────────┐
-Ready   ──▶ │ /orch-deliver-story  │ ──▶ verified
-            └──────────────────────┘
-                       │
-                       ▼
-            ┌──────────────────────┐
-Verified ─▶ │ /orch-merge-deploy   │ ──▶ Done (merged + deployed)
-            └──────────────────────┘
+              ┌──────────────────────┐
+To Do    ──▶ │ /orch-refine-story   │ ──▶ Ready (approved spec)
+              └──────────────────────┘
+                        │
+                        ▼
+              ┌──────────────────────┐
+Ready    ──▶ │ /orch-deliver-story  │ ──▶ Developed (code + unit tests)
+              └──────────────────────┘
+                        │
+                        ▼
+              ┌──────────────────────┐
+Developed ─▶ │ /orch-merge-deploy   │ ──▶ Testing (merged to dev)
+              └──────────────────────┘
+                        │
+                        ▼
+              ┌──────────────────────┐
+Testing  ──▶ │ /orch-qe             │ ──▶ Ready To Deploy (QE verified)
+              └──────────────────────┘
+                        │
+                        ▼
+              ┌──────────────────────┐
+Ready To ──▶ │ /orch-po             │ ──▶ Done (released to production)
+Deploy        └──────────────────────┘
 
 Bug reported  ──▶ /orch-fix-bug          ──▶ Fix branch + PR (then /orch-merge-deploy)
 Test failing  ──▶ /fix-automation-test   ──▶ Test-fix branch + PR (then /orch-merge-deploy)
@@ -210,4 +221,4 @@ Test failing  ──▶ /fix-automation-test   ──▶ Test-fix branch + PR (t
 | Bug fix | `fix/{issue-or-slug}` | `fix/142-login-loop` |
 | Test stabilization | `fix-tests/{slug}` | `fix-tests/login-redirect-flake` |
 
-PRs target `dev`, are squash-merged, and are deployed via `/orch-merge-deploy`. Production promotion is **not** in scope of this kit — wire your own `dev → main` promotion if needed.
+PRs target `dev` and are squash-merged via `/orch-merge-deploy`. Production promotion (`dev → master`) is handled by `/orch-po`, which bundles Ready To Deploy stories into a release branch, PRs to master, and deploys.

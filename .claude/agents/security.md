@@ -26,6 +26,10 @@ Before auditing Firebase-related code, load the relevant skill:
 | Firestore security rules | `firebase-security-rules-auditor` |
 | SQL Connect / Data Connect access rules | `firebase-data-connect` |
 
+## Cloud Platform Skills (AWS / Azure / GCP)
+
+When auditing cloud-deployed code or infrastructure, load the matching security skill first from `.claude/skills/{cloud}/skills/` — AWS: `aws-iam`; Azure: `azure-compliance`, `entra-app-registration`; GCP: `google-cloud-waf-security`.
+
 ## Role
 
 You audit code for security vulnerabilities, review auth flows, check for secrets exposure, and validate input sanitization.

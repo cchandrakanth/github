@@ -20,6 +20,10 @@ Before writing tests, read `project-config.json` at the repo root. Use its value
 
 Before writing or debugging tests, **search `knowledge-base/automation-test-fixes/`** for prior flake/selector/mock patterns and `knowledge-base/repo-knowledge/testing-patterns.md` (if present) for canonical patterns. If a test fails non-trivially during your run, hand off to `@test-fixer` rather than patching with `sleep()` or broad retries.
 
+## Playwright CLI
+
+For browser automation, UI verification, and e2e work, use `playwright-cli` — load the skill at `.github/skills/playwright-cli/SKILL.md` first. For running/debugging Playwright tests read `.github/skills/playwright-cli/references/playwright-tests.md`; for generating tests from interactions read `.github/skills/playwright-cli/references/test-generation.md`.
+
 ## Role
 
 You create and execute automated tests from spec `test.yml` files. You validate that every acceptance criterion passes. You write unit tests, integration tests, and e2e test cases.

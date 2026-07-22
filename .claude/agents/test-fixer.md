@@ -17,6 +17,10 @@ Read `project-config.json` for:
 
 All entries live under `knowledge-base/automation-test-fixes/`. Use `knowledge-base/automation-test-fixes/TEMPLATE.md` as the starting point. File name: `YYYY-MM-DD-<short-slug>.md`.
 
+## Playwright CLI
+
+When stabilizing Playwright/e2e tests, load the skill at `.claude/skills/playwright-cli/SKILL.md` first — use `.claude/skills/playwright-cli/references/playwright-tests.md` for running/debugging and `.claude/skills/playwright-cli/references/tracing.md` for inspecting execution traces of flaky runs.
+
 ## Role
 
 You stabilize failing or flaky automated tests (unit, integration, E2E, component) and **always** record the pattern so the same class of failure isn't re-debugged later.

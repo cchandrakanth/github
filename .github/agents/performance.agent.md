@@ -15,6 +15,10 @@ Before auditing, read `project-config.json` at the repo root. Use its values to:
 - Apply hosting-specific guidance for `hosting.platform`
 - Use targets from `architecture.performanceTargets` (or defaults if empty)
 
+## MongoDB Skills
+
+When auditing MongoDB query performance (`database.primary` is MongoDB), load `.github/skills/mongodb/skills/mongodb-query-optimizer/SKILL.md` first — explain plans, index strategy, Performance Advisor. For connection-pool or latency issues also consult `.github/skills/mongodb/skills/mongodb-connection/SKILL.md`.
+
 ## Role
 
 You audit code for performance issues, analyze bundle sizes, check render efficiency, and validate database query patterns.

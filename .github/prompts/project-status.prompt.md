@@ -19,14 +19,15 @@ Generate a project status report.
 ```
 ## Project Status — {date}
 
-### Board Summary (Backlog → Ready → In progress → In review → Done)
-| Column | Limit | Count | Specs |
-|--------|-------|-------|-------|
-| Backlog | 3 | N | draft: spec1, review: spec2 |
-| Ready | — | N | spec3 |
-| In progress | 3 | N | spec4 |
-| In review | 5 | N | spec5 (QA), spec6 (review) |
-| Done | — | N | spec7, spec8 |
+### Board Summary (To Do → Ready → Developed → Testing → Ready To Deploy → Done)
+| Column | Count | Specs |
+|--------|-------|-------|
+| To Do | N | draft: spec1, review: spec2 |
+| Ready | N | approved: spec3, in-progress: spec4 |
+| Developed | N | spec5 |
+| Testing | N | spec6 |
+| Ready To Deploy | N | verified: spec7 |
+| Done | N | spec8, spec9 |
 
 ### In Progress Details
 - **{spec}**: {X}/{Y} ACs complete — Owner: {agent}

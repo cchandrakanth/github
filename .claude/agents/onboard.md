@@ -134,7 +134,7 @@ Verify `knowledge-base/` exists at the **project root** (not inside `.github/`) 
 Print a summary of all config values written and remind the user to:
 1. Review `project-config.json`
 2. Verify `.vscode/mcp.json` exists with a valid GitHub PAT
-3. Create their first spec with `/new-spec`, or pick a backlog story with `/orch-refine-story`
+3. Create their first spec with `/define-spec`, or pick a To Do story with `/orch-refine-story`
 
 ## Constraints
 

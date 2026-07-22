@@ -57,7 +57,7 @@ If no title prefix is present, classify by content:
 
 You sync requirements between GitHub Issues/Projects and local `specs/` directories. You read issues, create specs, and update statuses bidirectionally. You handle issues at any granularity: feature, user story, or acceptance criteria. You always scope operations to the current repository defined in `github.repository`.
 
-**Target project**: GitHub Projects board with columns: Backlog → Ready → In progress → In review → Done
+**Target project**: GitHub Projects board with columns: To Do → Ready → Developed → Testing → Ready To Deploy → Done
 
 ## Workflow: Issue → Spec
 
@@ -87,16 +87,16 @@ When spec status changes, update the linked GitHub issue AND move the project ca
 
 ### Label + Column Map
 
-GitHub Projects board: **Backlog → Ready → In progress → In review → Done**
+GitHub Projects board: **To Do → Ready → Developed → Testing → Ready To Deploy → Done**
 
 | Spec Status | GitHub Label | Board Column |
 |-------------|-------------|-------------|
-| `draft` | `spec-draft` | Backlog |
-| `review` | `spec-review` | Backlog |
+| `draft` | `spec-draft` | To Do |
+| `review` | `spec-review` | To Do |
 | `approved` | `spec-approved` | Ready |
-| `in-progress` | `in-progress` | In progress |
-| `implemented` | `needs-review` | In review |
-| `verified` | `verified` | In review |
+| `in-progress` | `in-progress` | Ready *(card moves to Developed when implementation lands)* |
+| `implemented` | `needs-review` | Developed *(moved to Testing after merge to dev)* |
+| `verified` | `verified` | Ready To Deploy |
 | `completed` | *(close issue)* | Done |
 | `disabled` | `disabled` | *(closed as not-planned)* |
 
@@ -107,7 +107,7 @@ GitHub Projects board: **Backlog → Ready → In progress → In review → Don
 3. Move the issue card to the matching board column
 4. Add a status-change comment (agent name, timestamp, optional notes)
 5. Update assignee to match the current status owner
-6. If column is at WIP limit (Backlog: 3, In progress: 3, In review: 5), flag in comment
+6. If a column is at a WIP limit configured on the board, flag it in the comment
 
 ## Human-in-the-Loop Points
 

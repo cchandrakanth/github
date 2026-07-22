@@ -30,26 +30,26 @@ Every spec status change MUST be accompanied by a GitHub issue update:
 1. **Label swap**: Remove the old status label, add the new one (see label map below)
 2. **Comment**: Add a status-change comment with the agent name and timestamp
 3. **Assignment**: Update issue assignee to match the current owner (see Status Semantics)
-4. **Project board**: Move the issue card to the matching column (Backlog → Ready → In progress → In review → Done)
-5. **Column limits**: Respect WIP limits — Backlog (3), In progress (3), In review (5). If a column is at capacity, flag it in the comment
+4. **Project board**: Move the issue card to the matching column (To Do → Ready → Developed → Testing → Ready To Deploy → Done)
+5. **Column limits**: Respect any WIP limits configured on the board. If a column is at capacity, flag it in the comment
 
 ### Label Map
 
-Mapped to the GitHub Projects board columns: **Backlog → Ready → In progress → In review → Done**
+Mapped to the GitHub Projects board columns: **To Do → Ready → Developed → Testing → Ready To Deploy → Done**
 
-| Spec Status | GitHub Label | GitHub Project Column | Column Limit |
-|-------------|-------------|----------------------|-------------|
-| `draft` | `spec-draft` | Backlog | 3 |
-| `review` | `spec-review` | Backlog | 3 |
-| `approved` | `spec-approved` | Ready | — |
-| `in-progress` | `in-progress` | In progress | 3 |
-| `implemented` | `needs-review` | In review | 5 |
-| `verified` | `verified` | In review | 5 |
-| `completed` | *(issue closed)* | Done | — |
-| `disabled` | `disabled` | *(issue closed as not-planned)* | — |
+| Spec Status | GitHub Label | GitHub Project Column |
+|-------------|-------------|----------------------|
+| `draft` | `spec-draft` | To Do |
+| `review` | `spec-review` | To Do |
+| `approved` | `spec-approved` | Ready |
+| `in-progress` | `in-progress` | Ready *(card moves to Developed when implementation lands)* |
+| `implemented` | `needs-review` | Developed *(moved to Testing by `orch-merge-deploy` after merge to dev)* |
+| `verified` | `verified` | Ready To Deploy |
+| `completed` | *(issue closed)* | Done |
+| `disabled` | `disabled` | *(issue closed as not-planned)* |
 
-> **Note**: `draft` and `review` both map to **Backlog** — use labels to distinguish them.
-> `implemented` and `verified` both map to **In review** — use labels to distinguish QA vs final review.
+> **Note**: `draft` and `review` both map to **To Do** — use labels to distinguish them.
+> `implemented` spans **Developed** and **Testing** — the column reflects the pipeline phase (before vs after merge to dev), the label stays `needs-review` until QE verifies.
 
 ### Comment Template
 

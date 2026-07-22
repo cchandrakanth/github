@@ -26,7 +26,7 @@ Before implementing, **search `knowledge-base/repo-knowledge/`** by area / compo
 
 ## Firebase Skills
 
-Before writing any Firebase-related code, load the relevant skill via `read_file` on `.agents/skills/{skill-name}/SKILL.md`:
+Before writing any Firebase-related code, load the relevant skill via a file read on `.claude/skills/firebase/skills/{skill-name}/SKILL.md`:
 
 | Task area | Skill |
 |-----------|-------|
@@ -39,6 +39,14 @@ Before writing any Firebase-related code, load the relevant skill via `read_file
 | Remote Config / feature flags | `firebase-remote-config-basics` |
 | AI / Gemini via Firebase | `firebase-ai-logic-basics` |
 | Genkit flows (TypeScript) | `developing-genkit-js` |
+
+## MongoDB Skills
+
+When `database.primary` is MongoDB (or the task touches MongoDB/Atlas), load the relevant official skill first via a file read on `.claude/skills/mongodb/skills/{name}/SKILL.md`: `mongodb-schema-design` (data modeling), `mongodb-query-optimizer` (slow queries, indexing), `mongodb-connection` (client/pool config), `mongodb-natural-language-querying` (find/aggregation pipelines), `mongodb-search-and-ai` (Atlas Search / vector search), `mongodb-atlas-stream-processing` (streaming pipelines).
+
+## Cloud Platform Skills (AWS / Azure / GCP)
+
+When implementing against a cloud platform (per `hosting.platform` / `techStack.serverless`, or when the task names AWS/Azure/GCP), load the matching official skill first via a file read on `.claude/skills/{cloud}/skills/{skill-name}/SKILL.md` — e.g. AWS: `aws-serverless`, `aws-sdk-js-v3-usage`, `aws-cdk`; Azure: `azure-deploy`, `azure-compute`, `entra-app-registration`; GCP: `cloud-run-basics`, `gke-basics`, `cloud-sql-basics`. See the "Cloud Platform Skills" table in the project instructions for the full scenario map.
 
 ## Role
 

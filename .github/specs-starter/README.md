@@ -29,12 +29,12 @@ draft → review → approved → in-progress → implemented → verified → c
 
 | Status | Owner | Description | GitHub Board Column |
 |--------|-------|-------------|--------------------|
-| `draft` | Planner Agent | Spec being written, questions open | Backlog |
-| `review` | Human | Waiting for human approval | Backlog |
+| `draft` | Planner Agent | Spec being written, questions open | To Do |
+| `review` | Human | Waiting for human approval | To Do |
 | `approved` | Coder Agent | Ready for implementation | Ready |
-| `in-progress` | Coder Agent | Actively being built | In progress |
-| `implemented` | QA Agent | Code done, needs testing | In review |
-| `verified` | Reviewer Agent | Tests pass, needs final review | In review |
+| `in-progress` | Coder Agent | Actively being built | Ready *(moves to Developed when implementation lands)* |
+| `implemented` | QA Agent | Code done, needs testing | Developed → Testing *(after merge to dev)* |
+| `verified` | Reviewer Agent | QE verified, awaiting release | Ready To Deploy |
 | `completed` | — | Shipped | Done |
 | `disabled` | — | Deactivated | *(closed)* |
 
@@ -52,7 +52,7 @@ Three mandatory human checkpoints:
 
 | Action | How |
 |--------|-----|
-| Create new spec | `/new-spec` in chat or invoke `@planner` |
+| Create or update spec | `/define-spec` in chat or invoke `@planner` |
 | Implement spec | `/implement-spec {name}` or invoke `@coder` |
 | Review spec | `/review-spec {name}` or invoke `@reviewer` |
 | Test spec | `/test-spec {name}` or invoke `@qa-engineer` |
