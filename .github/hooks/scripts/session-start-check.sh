@@ -3,7 +3,7 @@
 # so agents and prompts that read it don't silently produce wrong output.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 CONFIG_FILE="$ROOT_DIR/project-config.json"
 
 [ -f "$CONFIG_FILE" ] || exit 0

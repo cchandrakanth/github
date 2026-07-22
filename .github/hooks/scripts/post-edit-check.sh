@@ -12,9 +12,9 @@ if [ -z "$FILE_PATH" ]; then
   exit 0
 fi
 
-# Resolve project root from this script's location: <root>/hooks/scripts/post-edit-check.sh
+# Resolve project root from this script's location: <root>/.github/hooks/scripts/post-edit-check.sh
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 CONFIG_FILE="$ROOT_DIR/project-config.json"
 
 # Restrict checks to source files declared in project-config.json (with safe fallback).

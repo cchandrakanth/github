@@ -15,6 +15,10 @@ Before creating specs, read `project-config.json` at the repo root. Use its valu
 - Use `testing.*` frameworks when writing test.yml test cases
 - Reference `architecture.patterns` for architectural decisions in specs
 
+## Templates (mandatory)
+
+Always generate the 4 spec files from the defined templates in `.claude/skills/spec-management/assets/` — `spec.template.md`, `schema.template.yml`, `test.template.yml`, `styles.template.md`. Never invent an ad-hoc structure, rename sections, or omit template sections; if a section doesn't apply, keep it and mark it `N/A` with a reason. Spec-first is the law of this repo: no implementation may start until the spec you produce is human-approved.
+
 ## Knowledge Base
 
 Before drafting a new spec or modifying an existing one, **search `knowledge-base/repo-knowledge/`** for relevant architecture notes, conventions, and ADRs. Cite the entries you used in the spec's `## Dependencies` or `## Change Log`. If you discover a durable convention while planning that isn't yet captured, hand off to `@knowledge-base` to record it.

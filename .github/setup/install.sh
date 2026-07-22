@@ -5,10 +5,11 @@
 #   ./setup/install.sh <target-project-dir> [--force]
 #
 # Effects in the target project:
-#   <target>/.github/         <- this kit (agents, instructions, prompts, skills, hooks, project-config.json, README)
-#   <target>/knowledge-base/  <- project-specific knowledge (repo-knowledge, fix-history, automation-test-fixes)
-#   <target>/specs/           <- spec framework + templates (from specs-starter/)
-#   <target>/.vscode/mcp.json <- GitHub MCP server config (from setup/mcp.json)
+#   <target>/.github/            <- this kit (agents, instructions, prompts, skills, hooks, README)
+#   <target>/project-config.json <- shared config, lives at the PROJECT ROOT (not inside .github/)
+#   <target>/knowledge-base/     <- project-specific knowledge at the PROJECT ROOT (repo-knowledge, fix-history, automation-test-fixes)
+#   <target>/specs/              <- spec framework + templates (from specs-starter/)
+#   <target>/.vscode/mcp.json    <- GitHub MCP server config (from setup/mcp.json)
 #
 # Existing files are NOT overwritten unless --force is passed.
 
@@ -30,6 +31,7 @@ if [ ! -d "$TARGET" ]; then
 fi
 
 KIT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+KIT_ROOT="$(cd "$KIT_DIR/.." && pwd)"   # repo root of the kit: holds project-config.json and knowledge-base/
 TARGET="$(cd "$TARGET" && pwd)"
 
 if [ "$KIT_DIR" = "$TARGET" ]; then
@@ -72,18 +74,29 @@ else
   echo "✅ Installed: $GITHUB_DST"
 fi
 
-# 2. Copy knowledge-base -> <target>/knowledge-base (project root, not inside .github)
-copy_tree "$KIT_DIR/knowledge-base" "$TARGET/knowledge-base"
-find "$TARGET/knowledge-base" -name '.DS_Store' -delete 2>/dev/null || true
+# 2. Copy project-config.json -> <target>/project-config.json (project root, not inside .github)
+if [ -f "$KIT_ROOT/project-config.json" ]; then
+  copy_tree "$KIT_ROOT/project-config.json" "$TARGET/project-config.json"
+else
+  echo "⚠️  project-config.json not found at kit root: $KIT_ROOT" >&2
+fi
 
-# 3. Copy specs-starter -> <target>/specs
+# 3. Copy knowledge-base -> <target>/knowledge-base (project root, not inside .github)
+if [ -d "$KIT_ROOT/knowledge-base" ]; then
+  copy_tree "$KIT_ROOT/knowledge-base" "$TARGET/knowledge-base"
+  find "$TARGET/knowledge-base" -name '.DS_Store' -delete 2>/dev/null || true
+else
+  echo "⚠️  knowledge-base/ not found at kit root: $KIT_ROOT" >&2
+fi
+
+# 4. Copy specs-starter -> <target>/specs
 copy_tree "$KIT_DIR/specs-starter" "$TARGET/specs"
 find "$TARGET/specs" -name '.DS_Store' -delete 2>/dev/null || true
 
-# 4. Copy MCP config -> <target>/.vscode/mcp.json
+# 5. Copy MCP config -> <target>/.vscode/mcp.json
 copy_tree "$KIT_DIR/setup/mcp.json" "$TARGET/.vscode/mcp.json"
 
-# 5. Make hook scripts executable in the destination
+# 6. Make hook scripts executable in the destination
 if [ -d "$GITHUB_DST/hooks/scripts" ]; then
   chmod +x "$GITHUB_DST"/hooks/scripts/*.sh 2>/dev/null || true
 fi
@@ -98,7 +111,7 @@ cat <<EOF
 Next steps:
   1. Create a GitHub PAT (repo, project, read:org) — VS Code will prompt on first MCP use.
   2. Open the project in VS Code and run: @onboard
-     (or edit $GITHUB_DST/project-config.json directly)
+     (or edit $TARGET/project-config.json directly)
   3. Validate config any time:
      $GITHUB_DST/scripts/validate-config.sh
 

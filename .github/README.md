@@ -8,7 +8,8 @@ A reusable, tech-stack-agnostic framework for **spec-driven development** with G
    ```bash
    cp -r .github/ <your-project>/.github/
    cp -r .github/specs-starter/ <your-project>/specs/
-   cp -r .github/knowledge-base/ <your-project>/knowledge-base/   # knowledge-base lives at the project root, NOT inside .github/
+   cp project-config.json <your-project>/project-config.json     # config lives at the project root, NOT inside .github/
+   cp -r knowledge-base/ <your-project>/knowledge-base/          # knowledge-base lives at the project root, NOT inside .github/
    ```
 
 2. **Set up GitHub MCP tools** — copy the MCP config so agents can read/write GitHub Issues and Projects:
@@ -79,7 +80,7 @@ Ask any GitHub-connected agent directly:
 
 | Folder | Contents | Purpose |
 |--------|----------|---------|
-| `project-config.json` | Single config file | All project technology & convention settings |
+| `../project-config.json` | Single config file at the **repo root** | All project technology & convention settings |
 | `agents/` | 13 agent definitions | Role-based development agents |
 | `instructions/` | 5 instruction files | File-specific coding standards |
 | `prompts/` | 14 prompt templates | Common development workflows (10 task prompts + 4 orchestrators) |

@@ -9,7 +9,7 @@ PROMPT=$(echo "$INPUT" | python3 -c "import json,sys; d=json.load(sys.stdin); pr
 [ -z "$PROMPT" ] && exit 0
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 CONFIG_FILE="$ROOT_DIR/project-config.json"
 
 ENABLED="true"

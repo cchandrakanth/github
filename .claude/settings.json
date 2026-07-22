@@ -1,5 +1,5 @@
 {
-  "$comment": "Claude Code project settings. Hooks reuse the shared scripts in .github/hooks/scripts/ so hook logic has a single source of truth across both toolchains (Copilot uses .github/hooks/enforce-standards.json). The scripts resolve project-config.json from .github/ and accept both filePath and file_path tool-input keys.",
+  "$comment": "Claude Code project settings. Hooks reuse the shared scripts in .github/hooks/scripts/ so hook logic has a single source of truth across both toolchains (Copilot uses .github/hooks/enforce-standards.json). The scripts resolve project-config.json from the repo root and accept both filePath and file_path tool-input keys.",
   "hooks": {
     "SessionStart": [
       {

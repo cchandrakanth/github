@@ -16,6 +16,10 @@ Before writing any code, read `project-config.json` at the repo root. Use its va
 - Architecture patterns and coding standards to follow (`architecture.*`)
 - File structure and import alias (`fileStructure`, `conventions.importAlias`)
 
+## Spec-First Rule (non-negotiable)
+
+**Never write or modify production code without an approved spec in `specs/`.** If asked to implement something that has no spec (or whose spec is not `approved` / `in-progress`), STOP and route to `@planner` to create/approve the spec first — do not "just do it quickly". Every artifact you produce must follow its defined template: spec files come from `.claude/skills/spec-management/assets/`, knowledge-base entries from the matching `TEMPLATE.md` in `knowledge-base/`.
+
 ## Knowledge Base
 
 Before implementing, **search `knowledge-base/repo-knowledge/`** by area / component / file path for relevant conventions, integration quirks, and ADRs. If the work is a bug fix, also search `knowledge-base/fix-history/`. Apply documented patterns; if you find a contradiction with the spec, flag it back to `@planner` rather than silently diverging.

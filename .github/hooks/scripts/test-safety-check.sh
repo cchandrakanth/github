@@ -14,7 +14,7 @@ fi
 
 # Resolve project root
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
 # Skip if not a test or test-related file
 case "$FILE_PATH" in

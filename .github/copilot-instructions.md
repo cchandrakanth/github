@@ -3,6 +3,8 @@
 > **All project-specific values are defined in `project-config.json` at the repo root.**
 > Agents, instructions, and prompts MUST read `project-config.json` to resolve technology choices, conventions, and project metadata. Do not hardcode technology-specific values — always derive them from the config.
 
+> **Root-level artifacts:** `project-config.json` and `knowledge-base/` live at the **project root** — never inside `.github/` or `.claude/`. Do not move them back, and always reference them by root-relative path.
+
 ## Organization Intent
 
 Read from `project-config.json` → `project.name` and `project.description`.
@@ -32,6 +34,8 @@ Read from `project-config.json` → `techStack.*`, `database.*`, `auth.*`, `ui.*
 
 ## Development Process: Spec-Driven Development
 
+> **Non-negotiable: SPEC FIRST, ALWAYS.** No code, schema, migration, test, or config change is written without an approved spec in `specs/`. If a request arrives without one, create the spec first (via the `orch-refine-story` or `define-spec` prompt, or the `planner` agent), get human approval, and only then implement. The only exceptions are documentation-only edits and `knowledge-base/` entries.
+
 Every feature, bug fix, or change follows this lifecycle:
 
 1. **Spec First** — No code without an approved spec in `specs/`
@@ -40,6 +44,20 @@ Every feature, bug fix, or change follows this lifecycle:
 4. **Test** — Automated tests must pass per `test.yml` in the spec
 5. **Review** — Security + performance review before merge
 6. **Mark Complete** — Update spec status to `completed`
+
+### Templates Are Mandatory
+
+Every generated artifact MUST be created from its defined template — never invent an ad-hoc structure or skip template sections:
+
+| Artifact | Template |
+|----------|----------|
+| Spec — `specs/{feature}/spec.md` | `.github/skills/spec-management/assets/spec.template.md` |
+| Schema — `specs/{feature}/schema.yml` | `.github/skills/spec-management/assets/schema.template.yml` |
+| Test plan — `specs/{feature}/test.yml` | `.github/skills/spec-management/assets/test.template.yml` |
+| Styles — `specs/{feature}/styles.md` | `.github/skills/spec-management/assets/styles.template.md` |
+| Repo knowledge entry | `knowledge-base/repo-knowledge/TEMPLATE.md` |
+| Bug fix record | `knowledge-base/fix-history/TEMPLATE.md` |
+| Test fix record | `knowledge-base/automation-test-fixes/TEMPLATE.md` |
 
 ### GitHub Issue Sync
 

@@ -1,7 +1,7 @@
 # Project Instructions (Claude Code)
 
-> This repo is dual-tooled: it works with **GitHub Copilot** (`.github/`) and **Claude Code** (`.claude/` + this file). Both toolchains share the same source of truth: **`.github/project-config.json`**.
-> Agents, commands, and skills MUST read `.github/project-config.json` to resolve technology choices, conventions, and project metadata. Do not hardcode technology-specific values — always derive them from the config.
+> This repo is dual-tooled: it works with **GitHub Copilot** (`.github/`) and **Claude Code** (`.claude/` + this file). Both toolchains share the same source of truth: **`project-config.json`**.
+> Agents, commands, and skills MUST read `project-config.json` to resolve technology choices, conventions, and project metadata. Do not hardcode technology-specific values — always derive them from the config.
 
 ## Where things live (Claude Code)
 
@@ -13,17 +13,21 @@
 | Skills | `.claude/skills/**/SKILL.md` | `.github/skills/**/SKILL.md` |
 | Path-scoped rules | `.claude/instructions/*.instructions.md` | `.github/instructions/*.instructions.md` |
 | MCP config | `.claude/.mcp.json.example` → copy to `.mcp.json` | `.github/setup/mcp.json` |
-| Config (shared) | `.github/project-config.json` | `.github/project-config.json` |
+| Config (shared) | `project-config.json` (**repo root**) | `project-config.json` (**repo root**) |
+| Knowledge base (shared) | `knowledge-base/` (**repo root**) | `knowledge-base/` (**repo root**) |
+| Spec templates | `.claude/skills/spec-management/assets/` | `.github/skills/spec-management/assets/` |
 
 Both trees are kept in sync — edit the Copilot source and re-run the conversion, or edit both.
 
+> **Root-level artifacts:** `project-config.json` and `knowledge-base/` live at the **project root** — never inside `.github/` or `.claude/`. Do not move them back, and always reference them by root-relative path.
+
 ## Organization Intent
 
-Read from `.github/project-config.json` → `project.name` and `project.description`.
+Read from `project-config.json` → `project.name` and `project.description`.
 
 ## Tech Stack
 
-Read from `.github/project-config.json` → `techStack.*`, `database.*`, `auth.*`, `ui.*`, `hosting.*`, `testing.*`.
+Read from `project-config.json` → `techStack.*`, `database.*`, `auth.*`, `ui.*`, `hosting.*`, `testing.*`.
 
 | Layer | Config Key |
 |-------|-----------|
@@ -46,6 +50,8 @@ Read from `.github/project-config.json` → `techStack.*`, `database.*`, `auth.*
 
 ## Development Process: Spec-Driven Development
 
+> **Non-negotiable: SPEC FIRST, ALWAYS.** No code, schema, migration, test, or config change is written without an approved spec in `specs/`. If a request arrives without one, create the spec first (`/orch-refine-story`, `/define-spec`, or the `planner` agent), get human approval, and only then implement. The only exceptions are documentation-only edits and `knowledge-base/` entries.
+
 Every feature, bug fix, or change follows this lifecycle:
 
 1. **Spec First** — No code without an approved spec in `specs/`
@@ -54,6 +60,20 @@ Every feature, bug fix, or change follows this lifecycle:
 4. **Test** — Automated tests must pass per `test.yml` in the spec
 5. **Review** — Security + performance review before merge
 6. **Mark Complete** — Update spec status to `completed`
+
+### Templates Are Mandatory
+
+Every generated artifact MUST be created from its defined template — never invent an ad-hoc structure or skip template sections:
+
+| Artifact | Template |
+|----------|----------|
+| Spec — `specs/{feature}/spec.md` | `.claude/skills/spec-management/assets/spec.template.md` |
+| Schema — `specs/{feature}/schema.yml` | `.claude/skills/spec-management/assets/schema.template.yml` |
+| Test plan — `specs/{feature}/test.yml` | `.claude/skills/spec-management/assets/test.template.yml` |
+| Styles — `specs/{feature}/styles.md` | `.claude/skills/spec-management/assets/styles.template.md` |
+| Repo knowledge entry | `knowledge-base/repo-knowledge/TEMPLATE.md` |
+| Bug fix record | `knowledge-base/fix-history/TEMPLATE.md` |
+| Test fix record | `knowledge-base/automation-test-fixes/TEMPLATE.md` |
 
 ### GitHub Issue Sync
 
@@ -81,13 +101,13 @@ See `specs/README.md` for the full spec structure and workflow.
 
 ## Architecture Patterns
 
-Read from `.github/project-config.json` → `architecture.patterns` (array of strings).
+Read from `project-config.json` → `architecture.patterns` (array of strings).
 
 Apply these patterns when writing code. If the array is empty, use sensible defaults for the configured tech stack.
 
 ## Coding Standards
 
-Read from `.github/project-config.json` → `architecture.codingStandards` (array of strings).
+Read from `project-config.json` → `architecture.codingStandards` (array of strings).
 
 Apply the language from `techStack.language` and import alias from `conventions.importAlias`.
 
@@ -98,19 +118,19 @@ Apply the language from `techStack.language` and import alias from `conventions.
 
 ## File Organization
 
-Read from `.github/project-config.json` → `fileStructure` (multiline string) and `conventions.*`.
+Read from `project-config.json` → `fileStructure` (multiline string) and `conventions.*`.
 
 Use `conventions.sourceDirectory` as the root source folder. Use `conventions.importAlias` for import paths. Only process files with extensions from `conventions.fileExtensions`.
 
 ## Security Rules
 
-Read from `.github/project-config.json` → `architecture.securityRules` (array of strings).
+Read from `project-config.json` → `architecture.securityRules` (array of strings).
 
 Apply security rules specific to `auth.provider` and `database.primary`. If the array is empty, enforce OWASP Top 10 defaults.
 
 ## Performance Rules
 
-Read from `.github/project-config.json` → `architecture.performanceTargets` (array of strings).
+Read from `project-config.json` → `architecture.performanceTargets` (array of strings).
 
 Apply performance targets specific to `techStack.frontend` and `hosting.platform`. If the array is empty, use defaults (Lighthouse ≥ 90, FCP < 1.5s, TTI < 3.5s).
 
