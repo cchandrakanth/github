@@ -46,6 +46,7 @@
   },
 
   "conventions": {
+    "packageManager": "",
     "importAlias": "",
     "sourceDirectory": "",
     "fileExtensions": []
