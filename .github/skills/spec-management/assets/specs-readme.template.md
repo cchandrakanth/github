@@ -9,17 +9,14 @@ Every feature, bug fix, or change in this project follows the spec-driven develo
 ```
 specs/
 ├── README.md              # This file
-├── {feature-name}/        # One folder per feature spec
-│   ├── spec.md            # Requirements, user stories, ACs
-│   ├── styles.md          # CSS, layout, responsive design
-│   ├── test.yml           # Test cases mapped to ACs
-│   └── schema.yml         # Database schema changes
-└── templates/             # Templates for creating new specs
-    ├── spec.template.md
-    ├── styles.template.md
-    ├── test.template.yml
-    └── schema.template.yml
+└── {feature-name}/        # One folder per feature spec
+    ├── spec.md            # Requirements, user stories, ACs
+    ├── styles.md          # CSS, layout, responsive design
+    ├── test.yml           # Test cases mapped to ACs
+    └── schema.yml         # Database schema changes
 ```
+
+> Templates are **not** copied into `specs/`. They live with the spec-management skill — `.github/skills/spec-management/assets/` (Copilot) and `.claude/skills/spec-management/assets/` (Claude Code) — so there is one copy to maintain.
 
 ## Lifecycle
 

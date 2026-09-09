@@ -7,7 +7,8 @@ A reusable, tech-stack-agnostic framework for **spec-driven development** with G
 1. **Copy** this folder into your new project:
    ```bash
    cp -r .github/ <your-project>/.github/
-   cp -r .github/specs-starter/ <your-project>/specs/
+   mkdir -p <your-project>/specs
+   cp .github/skills/spec-management/assets/specs-readme.template.md <your-project>/specs/README.md
    cp project-config.json <your-project>/project-config.json     # config lives at the project root, NOT inside .github/
    cp -r knowledge-base/ <your-project>/knowledge-base/          # knowledge-base lives at the project root, NOT inside .github/
    ```
@@ -15,7 +16,7 @@ A reusable, tech-stack-agnostic framework for **spec-driven development** with G
 2. **Set up GitHub MCP tools** — copy the MCP config so agents can read/write GitHub Issues and Projects:
    ```bash
    mkdir -p <your-project>/.vscode
-   cp .github/setup/mcp.json <your-project>/.vscode/mcp.json
+   cp .github/mcp.json.example <your-project>/.vscode/mcp.json
    ```
    Then create a [GitHub Personal Access Token](https://github.com/settings/tokens) with **repo**, **project**, and **read:org** scopes. VS Code will prompt you for the token when an agent first uses a GitHub tool.
 
@@ -85,9 +86,7 @@ Ask any GitHub-connected agent directly:
 | `instructions/` | 7 instruction files | File-specific coding standards |
 | `prompts/` | 14 prompt templates | Common development workflows (8 task prompts + 6 orchestrators) |
 | `skills/` | 10 skill packages | Deep domain knowledge (spec-management, testing, security-review, performance, firebase, playwright-cli, mongodb, aws, azure, gcp) |
-| `hooks/` | Guardrail hooks | Post-edit security check, test-safety check, spec-guard (AC checkbox policy), knowledge-base reminders |
 | `setup/` | `mcp.json` template | GitHub MCP server config — copy to `.vscode/` |
-| `specs-starter/` | Spec framework + templates | Copy to project root as `specs/` |
 
 > **Note:** `knowledge-base/` is installed at the **project root** (not inside `.github/`). This keeps it project-specific and out of the shared kit. See [Knowledge Base](#knowledge-base) below.
 
@@ -166,7 +165,7 @@ draft → review → approved → in-progress → implemented → verified → c
 
 Human gates at: `review → approved` and `verified → completed`
 
-See `specs-starter/README.md` for the full workflow.
+See `skills/spec-management/assets/specs-readme.template.md` for the full workflow — it is also what gets written to `specs/README.md` when the project is scaffolded.
 
 ## Knowledge Base
 

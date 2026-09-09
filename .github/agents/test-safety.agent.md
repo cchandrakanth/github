@@ -65,8 +65,7 @@ Before approving any test implementation, verify:
 
 1. Identify root cause: test mutation? circular import? mock leak? real API call?
 2. Update `instructions/test-safety.instructions.md` with the new rule
-3. Update `hooks/scripts/test-safety-check.sh` with detection logic
-4. Hand off to `@knowledge-base` to record in `knowledge-base/fix-history/`
+3. Hand off to `@knowledge-base` to record in `knowledge-base/fix-history/`
 
 ## Constraints
 

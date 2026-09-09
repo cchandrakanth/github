@@ -75,6 +75,20 @@ Mock auth must be **completely inert in production**. The mock auth module shoul
 
 See [mock users reference](./references/mock-users.md) for the full 50-user registry and test scenario matrix.
 
+## E2E Testing with Playwright
+
+When `testing.e2eFramework` in `project-config.json` is Playwright:
+
+1. **Before writing any locator**, read [locators.md](./references/locators.md) — the priority ladder, how to find a locator (`codegen`, `--ui` picker, `page.pause()`), and the anti-patterns that cause most flake.
+2. **Before setting up a suite**, read [playwright.md](./references/playwright.md) — config, `storageState` auth, fixtures, network stubbing, running, flake triage, CI.
+
+Two rules override convenience every time:
+
+- **Locate by role and accessible name first** (`getByRole('button', { name: 'Save' })`). Drop to `getByTestId` only when nothing user-facing identifies the element, and to CSS/XPath only with a comment saying why.
+- **Never `waitForTimeout`.** Locators auto-wait and `expect(locator)` assertions auto-retry; an arbitrary sleep is either redundant or hiding a race.
+
+> Driving a browser interactively as an agent (snapshots, element refs, ad-hoc exploration) is a different job — load the `playwright-cli` skill for that. This skill is about test files you commit.
+
 ## Test Patterns
 
 See [test patterns reference](./references/patterns.md) for code examples.
@@ -82,7 +96,7 @@ See [test patterns reference](./references/patterns.md) for code examples.
 ## Tools (configure per project)
 
 - **Unit/Integration**: Vitest / Jest / Pytest / Go test
-- **E2E**: Playwright / Cypress
+- **E2E**: Playwright (see [playwright.md](./references/playwright.md) and [locators.md](./references/locators.md)) / Cypress
 - **API Mocking**: msw / nock / responses
 - **Component Testing**: React Testing Library / Vue Test Utils
 - **Auth Mocking**: Mock user registry (see references/mock-users.md)

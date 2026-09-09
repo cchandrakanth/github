@@ -53,7 +53,7 @@ AC checkboxes in `spec.md` track **implementation**, not test results:
 - A spec may move to `implemented` only when **every** AC checkbox is `[x]`.
 - **Automation tests never gate a checkbox.** Test outcomes are recorded in the test report and expressed through the spec `status` transition `implemented` → `verified`.
 - QA, test, and review agents MUST NOT modify AC checkboxes. If a test fails for a checked AC, the checkbox stays checked (the code exists — the failure is a defect routed back to the Coder); if an AC is unchecked on an `implemented` spec, flag it to the Coder instead of checking it.
-- The `spec-guard` hook (`.github/hooks/scripts/spec-guard.sh`) warns whenever a spec's `status` and its AC checkboxes disagree.
+- Whenever a spec's `status` and its AC checkboxes disagree, flag it — an `implemented` (or later) spec with unchecked ACs, or a `draft`/`review`/`approved` spec with checked ones, is a defect in the spec.
 
 ### Templates Are Mandatory
 
@@ -91,7 +91,7 @@ GitHub Projects board: **To Do → Ready → Developed → Testing → Ready To 
 
 See `skills/spec-management/references/lifecycle.md` for full transition rules and label map.
 
-See `specs/README.md` for the full spec structure and workflow (created from `.github/specs-starter/README.md` when `specs/` doesn't exist yet).
+See `specs/README.md` for the full spec structure and workflow (created from `.github/skills/spec-management/assets/specs-readme.template.md` when `specs/` doesn't exist yet).
 
 ## Architecture Patterns
 
@@ -169,6 +169,8 @@ Firebase skills live in `.github/skills/firebase/skills/`. All agents MUST load 
 ## Playwright CLI Skill
 
 `playwright-cli` (from `@playwright/cli`) is a token-efficient browser-automation CLI for coding agents — persistent browser sessions, accessibility snapshots with element refs, cross-browser support. The skill lives at `.github/skills/playwright-cli/SKILL.md` — load it **before** any browser automation, UI verification, or Playwright test work (running, debugging, generating, or healing tests).
+
+> **Which Playwright skill?** `playwright-cli` is for *driving a browser as an agent* — snapshots, element refs, ad-hoc exploration. For *authoring committed test files*, use the testing skill instead: `.github/skills/testing/references/locators.md` (locator ladder, how to find one, anti-patterns) and `.github/skills/testing/references/playwright.md` (config, `storageState` auth, fixtures, flake triage, CI).
 
 | Scenario | Reference to load (under `.github/skills/playwright-cli/references/`) |
 |----------|------------------|

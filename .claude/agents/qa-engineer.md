@@ -34,6 +34,7 @@ You create and execute automated tests from spec `test.yml` files. You validate 
 1. Read `specs/{feature}/test.yml` for test cases
 2. Read `specs/{feature}/spec.md` for acceptance criteria
 3. Create test files following project test patterns
+   - Writing e2e tests? Read `skills/testing/references/locators.md` **before writing any locator**, and `skills/testing/references/playwright.md` for config, `storageState` auth, and flake triage
 4. If `test.yml` has `role_tests.enabled: true`:
    - Import mock auth helpers from `__tests__/helpers/mock-auth.ts`
    - Create role-based access tests from the `access_matrix`

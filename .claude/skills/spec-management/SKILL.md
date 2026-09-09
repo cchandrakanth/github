@@ -16,6 +16,10 @@ argument-hint: "Describe the feature or requirement to spec out"
 
 ## Procedure
 
+### Bootstrapping `specs/`
+
+If `specs/` does not exist yet at the project root, create it and write `specs/README.md` from [the specs README template](./assets/specs-readme.template.md). Do **not** copy the other templates into `specs/` — they stay here in `assets/` as the single source of truth.
+
 ### Creating a New Spec
 
 1. Read the requirement from user input or GitHub issue
@@ -50,4 +54,4 @@ argument-hint: "Describe the feature or requirement to spec out"
 ## References
 
 - [Spec Lifecycle](./references/lifecycle.md)
-- [Templates](./assets/)
+- [Templates](./assets/) — the 4 spec-file templates plus `specs-readme.template.md`

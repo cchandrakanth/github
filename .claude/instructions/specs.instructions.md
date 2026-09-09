@@ -37,7 +37,7 @@ AC checkboxes (`- [ ] **AC-N.M**`) track **implementation**, not test results:
 - `status: implemented` (and beyond) requires **every** AC checkbox to be `[x]`
 - Test outcomes are expressed via the `implemented` → `verified` status transition — QA, test, and review agents MUST NOT modify AC checkboxes
 - A spec still in `draft` / `review` / `approved` must have **no** checked ACs
-- The `spec-guard` hook warns on any status/checkbox mismatch
+- Flag any status/checkbox mismatch instead of silently reconciling it
 
 ## Rules
 

@@ -13,8 +13,7 @@ Set up the development framework for this project.
 2. Ask the developer about their project using the onboard agent's question sequence (skip pre-filled fields)
 3. Write all answers into `project-config.json` — including the `github` section (`repository`, `projectNumber`, `repositoryLabel`)
 4. Verify `knowledge-base/` exists at the **project root** with the three subfolders + READMEs + TEMPLATEs (do not pre-fill entries)
-5. Verify `hooks/scripts/post-edit-check.sh` is executable
-6. Remind the user to copy `setup/mcp.json` to `.vscode/mcp.json` and provide a GitHub PAT (`repo`, `project`, `read:org`)
-7. Print a summary of the config and next steps
+5. Remind the user to copy `setup/mcp.json` to `.vscode/mcp.json` and provide a GitHub PAT (`repo`, `project`, `read:org`)
+6. Print a summary of the config and next steps
 
 Start by reading `project-config.json`, then ask: "Let's set up your project. What's the project name and what does it do?"

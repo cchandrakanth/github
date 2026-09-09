@@ -45,23 +45,23 @@ describe('GET /api/resource', () => {
 
 ## E2E Test — Playwright
 
+Locate by role and accessible name, not CSS. See [locators.md](./locators.md) for the full ladder and [playwright.md](./playwright.md) for config and auth setup.
+
 ```typescript
 import { test, expect } from '@playwright/test';
 
 test.describe('Feature Page', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/feature');
   });
 
-  test('displays main content', async ({ page }) => {
-    await page.goto('/feature');
-    await expect(page.getByText('Feature Title')).toBeVisible();
+  test('AC-01: displays main content', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: 'Feature Title' })).toBeVisible();
   });
 
-  test('form submission works', async ({ page }) => {
-    await page.goto('/feature');
-    await page.fill('[name="field"]', 'value');
-    await page.click('button[type="submit"]');
+  test('AC-02: form submission works', async ({ page }) => {
+    await page.getByLabel('Field name').fill('value');
+    await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Success')).toBeVisible();
   });
 });
@@ -357,12 +357,13 @@ describeIf('Dashboard access by role', () => {
       }, userId);
 
       await page.goto('/dashboard');
-      await expect(page.getByText('Dashboard')).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
 
+      const adminPanel = page.getByRole('link', { name: 'Admin Panel' });
       if (canSeeAdminPanel) {
-        await expect(page.getByText('Admin Panel')).toBeVisible();
+        await expect(adminPanel).toBeVisible();
       } else {
-        await expect(page.getByText('Admin Panel')).not.toBeVisible();
+        await expect(adminPanel).toHaveCount(0);   // absent from the DOM, not merely hidden
       }
     });
   }

@@ -2,14 +2,14 @@
 # Installer: copies this Copilot starter kit into a target project.
 #
 # Usage:
-#   ./setup/install.sh <target-project-dir> [--force]
+#   ./scripts/install.sh <target-project-dir> [--force]
 #
 # Effects in the target project:
-#   <target>/.github/            <- this kit (agents, instructions, prompts, skills, hooks, README)
+#   <target>/.github/            <- this kit (agents, instructions, prompts, skills, README)
 #   <target>/project-config.json <- shared config, lives at the PROJECT ROOT (not inside .github/)
 #   <target>/knowledge-base/     <- project-specific knowledge at the PROJECT ROOT (repo-knowledge, fix-history, automation-test-fixes)
-#   <target>/specs/              <- spec framework + templates (from specs-starter/)
-#   <target>/.vscode/mcp.json    <- GitHub MCP server config (from setup/mcp.json)
+#   <target>/specs/              <- spec framework README (from skills/spec-management/assets/)
+#   <target>/.vscode/mcp.json    <- GitHub MCP server config (from mcp.json.example)
 #
 # Existing files are NOT overwritten unless --force is passed.
 
@@ -53,16 +53,15 @@ copy_tree() {
   echo "✅ Installed: $dst"
 }
 
-# 1. Copy kit -> <target>/.github (excluding specs-starter/ which goes elsewhere)
+# 1. Copy kit -> <target>/.github
 GITHUB_DST="$TARGET/.github"
 if [ -e "$GITHUB_DST" ] && [ "$FORCE" -ne 1 ]; then
   echo "⏭  Skipping existing: $GITHUB_DST (use --force to overwrite)"
 else
   [ "$FORCE" -eq 1 ] && [ -e "$GITHUB_DST" ] && rm -rf "$GITHUB_DST"
   mkdir -p "$GITHUB_DST"
-  # Copy everything except specs-starter, knowledge-base, VCS metadata, and OS junk
+  # Copy everything except knowledge-base, VCS metadata, and OS junk
   (cd "$KIT_DIR" && find . -mindepth 1 -maxdepth 1 \
-    ! -name specs-starter \
     ! -name knowledge-base \
     ! -name '.git' \
     ! -name '.gitignore' \
@@ -89,16 +88,16 @@ else
   echo "⚠️  knowledge-base/ not found at kit root: $KIT_ROOT" >&2
 fi
 
-# 4. Copy specs-starter -> <target>/specs
-copy_tree "$KIT_DIR/specs-starter" "$TARGET/specs"
-find "$TARGET/specs" -name '.DS_Store' -delete 2>/dev/null || true
+# 4. Scaffold <target>/specs from the spec-management skill's README template
+# (the 4 spec-file templates stay in the skill's assets/ — they are not copied into specs/)
+copy_tree "$KIT_DIR/skills/spec-management/assets/specs-readme.template.md" "$TARGET/specs/README.md"
 
 # 5. Copy MCP config -> <target>/.vscode/mcp.json
-copy_tree "$KIT_DIR/setup/mcp.json" "$TARGET/.vscode/mcp.json"
+copy_tree "$KIT_DIR/mcp.json.example" "$TARGET/.vscode/mcp.json"
 
-# 6. Make hook scripts executable in the destination
-if [ -d "$GITHUB_DST/hooks/scripts" ]; then
-  chmod +x "$GITHUB_DST"/hooks/scripts/*.sh 2>/dev/null || true
+# 6. Make helper scripts executable in the destination
+if [ -d "$GITHUB_DST/scripts" ]; then
+  chmod +x "$GITHUB_DST"/scripts/*.sh 2>/dev/null || true
 fi
 if [ -d "$GITHUB_DST/skills/spec-management/scripts" ]; then
   chmod +x "$GITHUB_DST"/skills/spec-management/scripts/*.sh 2>/dev/null || true

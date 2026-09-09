@@ -1,49 +1,20 @@
 {
-  "$comment": "Claude Code project settings. Hooks reuse the shared scripts in .github/hooks/scripts/ so hook logic has a single source of truth across both toolchains (Copilot uses .github/hooks/enforce-standards.json). The scripts resolve project-config.json from the repo root and accept both filePath and file_path tool-input keys.",
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.github/hooks/scripts/session-start-check.sh\"",
-            "timeout": 5
-          }
-        ]
-      }
+  "permissions": {
+    "allow": [
+      "Bash(git mv *)",
+      "Bash(bash -n .github/scripts/install.sh)",
+      "Bash(python3 -m json.tool .claude/.mcp.json.example)",
+      "Bash(python3 -m json.tool .github/mcp.json.example)",
+      "Edit(/.claude/skills/testing/**)",
+      "Bash(grep -n \"playwright-cli\\\\` \\(from\" .github/copilot-instructions.md)",
+      "Bash(cp .claude/instructions/api-routes.instructions.md .github/instructions/api-routes.instructions.md && diff -q .claude/instructions/api-routes.instructions.md .github/instructions/api-routes.instructions.md && echo \"api-routes IN SYNC\")",
+      "Edit(/.claude/skills/spec-management/**)",
+      "Bash(cp .claude/skills/spec-management/assets/schema.template.yml .github/skills/spec-management/assets/schema.template.yml)",
+      "Bash(python3 -c \"import yaml,sys; yaml.safe_load\\(open\\('.claude/skills/spec-management/assets/schema.template.yml'\\)\\); print\\('schema.template.yml parses OK'\\)\")"
     ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.github/hooks/scripts/kb-reminder.sh\"",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.github/hooks/scripts/post-edit-check.sh\"",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.github/hooks/scripts/test-safety-check.sh\"",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.github/hooks/scripts/spec-guard.sh\"",
-            "timeout": 10
-          }
-        ]
-      }
+    "additionalDirectories": [
+      "/Users/chandrakanthchintada/Desktop/WIP/dev/github/.claude/instructions"
     ]
-  }
+  },
+  "$comment": "Claude Code project settings. No hooks are configured: guardrails live in CLAUDE.md and the agent/instruction files rather than in shell scripts that run on every edit."
 }

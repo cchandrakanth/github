@@ -10,7 +10,7 @@ Test the specified feature against its spec.
 
 1. Read `specs/{feature-name}/test.yml` for test cases
 2. Read `specs/{feature-name}/spec.md` for acceptance criteria
-3. Run or create test files from test.yml
+3. Run or create test files from test.yml — for e2e work, read `skills/testing/references/locators.md` before writing locators and `skills/testing/references/playwright.md` for setup and flake triage
 4. If `role_tests.enabled: true` in test.yml:
    - Set `MOCK_AUTH_ENABLED=true` in the test environment
    - Create/run role-based access tests from the access matrix

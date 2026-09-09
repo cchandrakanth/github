@@ -50,13 +50,19 @@ modifications:
           description: "{Why this field is being added}"
         migration: "{How to handle existing documents/rows without this field}"
 
-# API routes that interact with this schema:
+# API routes that interact with this schema.
+# Each entry must have a matching operation in the OpenAPI contract (openapi.yaml),
+# authored BEFORE the handler code — see instructions/api-routes.instructions.md.
 api_routes:
   - method: "GET"
     path: "/api/{resource}"
+    operation_id: "{getResource}"      # must match operationId in openapi.yaml
+    contract: "openapi.yaml"
     reads_from: "{collection/table}"
     description: "{What this route returns}"
   - method: "POST"
     path: "/api/{resource}"
+    operation_id: "{createResource}"
+    contract: "openapi.yaml"
     writes_to: "{collection/table}"
     description: "{What this route creates/updates}"

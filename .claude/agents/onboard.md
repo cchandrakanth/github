@@ -124,9 +124,8 @@ Skill references are project-agnostic by design. **Do not edit skill files** as 
 
 Verify `knowledge-base/` exists at the **project root** (not inside `.github/`) with the three subfolders (`repo-knowledge/`, `fix-history/`, `automation-test-fixes/`) and each has its `README.md` and `TEMPLATE.md`. If anything is missing, recreate from the kit's `knowledge-base/` template. Do not pre-fill entries — agents add them as work happens.
 
-### Step 6: Verify hook + MCP setup
+### Step 6: Verify MCP setup
 
-- Confirm `hooks/scripts/post-edit-check.sh` is executable (`chmod +x` if needed)
 - Remind the user to copy `setup/mcp.json` to `.vscode/mcp.json` and provide a GitHub PAT with `repo`, `project`, `read:org` scopes (if not already done)
 
 ### Step 7: Confirm
