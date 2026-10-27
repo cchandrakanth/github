@@ -1,0 +1,10 @@
+{
+  "entries": [
+    { "path": ".gemini/skills" },
+    { "path": ".gemini/skills/firebase/skills" },
+    { "path": ".gemini/skills/mongodb/skills" },
+    { "path": ".gemini/skills/aws/skills" },
+    { "path": ".gemini/skills/azure/skills" },
+    { "path": ".gemini/skills/gcp/skills" }
+  ]
+}

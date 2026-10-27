@@ -1,0 +1,85 @@
+# Spec Lifecycle
+
+## Status Transitions
+
+```
+draft ──► review ──► approved ──► in-progress ──► implemented ──► verified ──► completed
+  │          │           │                              │              │
+  ▼          ▼           ▼                              ▼              ▼
+disabled  disabled    disabled                       disabled       disabled
+```
+
+## Transition Rules
+
+| From | To | Trigger | Requires Human | GitHub Sync |
+|------|-----|---------|----------------|-------------|
+| (new) | draft | Agent creates spec | No | Add label `spec-draft`, comment with spec link |
+| draft | review | Agent completes all 4 files | No | Add label `spec-review`, remove `spec-draft` |
+| review | approved | Human reviews and approves | **Yes** | Add label `spec-approved`, remove `spec-review` |
+| review | draft | Human requests changes | **Yes** | Add label `spec-draft`, remove `spec-review`, comment with requested changes |
+| approved | in-progress | Coder starts implementation | No | Add label `in-progress`, remove `spec-approved` |
+| in-progress | implemented | Coder finishes all ACs — every AC checkbox must be `[x]`, checked at implementation time (not after tests) | No | Add label `needs-review`, remove `in-progress` |
+| implemented | verified | QA runs tests, all pass — status change only; QA never modifies AC checkboxes | No | Add label `verified`, remove `needs-review` |
+| verified | completed | Reviewer approves + human confirms | **Yes** | Close issue, remove all spec labels |
+| any | disabled | Human decision | **Yes** | Add label `disabled`, close issue as not-planned |
+
+## GitHub Sync Rules
+
+Every spec status change MUST be accompanied by a GitHub issue update:
+
+1. **Label swap**: Remove the old status label, add the new one (see label map below)
+2. **Comment**: Add a status-change comment with the agent name and timestamp
+3. **Assignment**: Update issue assignee to match the current owner (see Status Semantics)
+4. **Project board**: Move the issue card to the matching column (To Do → Ready → Developed → Testing → Ready To Deploy → Done)
+5. **Column limits**: Respect any WIP limits configured on the board. If a column is at capacity, flag it in the comment
+
+### Label Map
+
+Mapped to the GitHub Projects board columns: **To Do → Ready → Developed → Testing → Ready To Deploy → Done**
+
+| Spec Status | GitHub Label | GitHub Project Column |
+|-------------|-------------|----------------------|
+| `draft` | `spec-draft` | To Do |
+| `review` | `spec-review` | To Do |
+| `approved` | `spec-approved` | Ready |
+| `in-progress` | `in-progress` | Ready *(card moves to Developed when implementation lands)* |
+| `implemented` | `needs-review` | Developed *(moved to Testing by `orch-merge-deploy` after merge to dev)* |
+| `verified` | `verified` | Ready To Deploy |
+| `completed` | *(issue closed)* | Done |
+| `disabled` | `disabled` | *(issue closed as not-planned)* |
+
+> **Note**: `draft` and `review` both map to **To Do** — use labels to distinguish them.
+> `implemented` spans **Developed** and **Testing** — the column reflects the pipeline phase (before vs after merge to dev), the label stays `needs-review` until QE verifies.
+
+### Comment Template
+
+When updating a GitHub issue on status change, use:
+
+```
+**Status → {new_status}**
+Agent: {agent_name}
+Spec: `specs/{feature-name}/spec.md`
+Timestamp: {ISO 8601}
+{optional_notes}
+```
+
+## Human-in-the-Loop Gates
+
+Three mandatory human checkpoints:
+
+1. **Approval Gate** (`review` → `approved`): Human verifies the spec matches intent
+2. **Completion Gate** (`verified` → `completed`): Human confirms feature ships
+3. **Disable Gate** (any → `disabled`): Human decides to pause/remove a feature
+
+## Status Semantics
+
+| Status | Who Owns It | What Happens | GitHub Assignee |
+|--------|-------------|--------------|-----------------|
+| `draft` | Planner | Creating/refining spec files | Planner / Author |
+| `review` | Human | Waiting for human approval | Human reviewer |
+| `approved` | Coder | Ready for implementation | Coder / Unassigned |
+| `in-progress` | Coder | Actively being built | Coder |
+| `implemented` | QA Engineer | Code done, needs testing | QA Engineer |
+| `verified` | Reviewer | Tests pass, needs final review | Reviewer |
+| `completed` | Nobody | Done, shipped | *(unassigned)* |
+| `disabled` | Nobody | Deactivated, kept for history | *(unassigned)* |

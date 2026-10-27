@@ -1,0 +1,13 @@
+{
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  },
+  "$comment": "Gemini / Antigravity project settings. Always-on project rules and structured workflow routing live in GEMINI.md at the repository root."
+}
