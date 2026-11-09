@@ -16,7 +16,7 @@ specs/
     └── schema.yml         # Database schema changes
 ```
 
-> Templates are **not** copied into `specs/`. They live with the spec-management skill — `.gemini/skills/spec-management/assets/` (Gemini / Antigravity), `.github/skills/spec-management/assets/` (Copilot), and `.claude/skills/spec-management/assets/` (Claude Code) — so there is one copy to maintain.
+> Templates are **not** copied into `specs/`. They live with the spec-management skill at `.gemini/skills/spec-management/assets/` so there is one copy to maintain.
 
 ## Lifecycle
 

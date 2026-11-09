@@ -76,7 +76,7 @@ Agents use the **GitHub MCP server** to interact with GitHub Issues and Projects
 | `agents/` | 14 agent definitions | Role-based development agents (`.gemini/agents/*.md`) |
 | `commands/` | 14 workflow commands | Common development workflows (8 task commands + 6 stateful orchestrators) |
 | `instructions/` | 7 instruction files | Path-scoped coding standards (`.gemini/instructions/*.instructions.md`) |
-| `skills/` | 10 skill packages | Deep domain knowledge (`spec-management`, `testing`, `security-review`, `performance`, `firebase`, `playwright-cli`, `mongodb`, `aws`, `azure`, `gcp`) |
+| `skills/` | 11 skill packages | Deep domain knowledge (`spec-management`, `relational-db`, `testing`, `security-review`, `performance`, `firebase`, `playwright-cli`, `mongodb`, `aws`, `azure`, `gcp`) |
 | `scripts/` | Installer & validator | `install.sh`, `validate-config.sh`, `move-to-ready.mjs` |
 | `mcp_config.json.example` | MCP config template | GitHub MCP server configuration for Antigravity |
 | `skills.json` | Skill discovery manifest | Optional manifest for registering nested skill directories |

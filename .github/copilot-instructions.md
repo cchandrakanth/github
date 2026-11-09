@@ -1,9 +1,9 @@
-# Project Instructions
+# Project Instructions (GitHub Copilot)
 
 > **All project-specific values are defined in `project-config.json` at the repo root.**
 > Agents, instructions, and prompts MUST read `project-config.json` to resolve technology choices, conventions, and project metadata. Do not hardcode technology-specific values — always derive them from the config.
 
-> **Root-level artifacts:** `project-config.json` and `knowledge-base/` live at the **project root** — never inside `.github/` or `.claude/`. Do not move them back, and always reference them by root-relative path.
+> **Root-level artifacts:** `project-config.json` and `knowledge-base/` live at the **project root** — never inside `.github/`. Do not move them back, and always reference them by root-relative path.
 
 ## Organization Intent
 
@@ -11,26 +11,34 @@ Read from `project-config.json` → `project.name` and `project.description`.
 
 ## Tech Stack
 
-Read from `project-config.json` → `techStack.*`, `database.*`, `auth.*`, `ui.*`, `hosting.*`, `testing.*`.
+Read from `project-config.json` → `techStack.*`, `database.*`, `auth.*`, `ui.*`, `hosting.*`, `testing.*`, `conventions.*`.
 
 | Layer | Config Key |
 |-------|-----------|
 | Language | `techStack.language` |
 | Frontend | `techStack.frontend` |
 | Mobile | `techStack.mobile` |
+| Desktop | `techStack.desktop` |
 | Backend | `techStack.backend` |
 | Serverless | `techStack.serverless` |
-| Database | `database.primary` |
+| Database (Primary) | `database.primary` |
+| Database (Local / Offline) | `database.localOffline` |
 | ORM / Client | `database.orm` |
+| Data Pattern / Isolation | `database.dataPattern` |
+| Caching | `database.caching` |
 | Auth | `auth.provider` |
 | Session | `auth.sessionMechanism` |
 | UI Framework | `ui.framework` |
 | Design System | `ui.designSystem` |
 | Hosting | `hosting.platform` |
 | CI/CD | `hosting.cicd` |
+| Monorepo | `hosting.monorepo` |
 | Unit Tests | `testing.unitFramework` |
 | E2E Tests | `testing.e2eFramework` |
 | Component Tests | `testing.componentFramework` |
+| DB Integration Engine | `testing.dbIntegrationEngine` |
+| Workspaces / Apps | `conventions.workspaces` |
+| Native Bindings Allowlist | `conventions.nativeBindingsAllowlist` |
 
 ## Development Process: Spec-Driven Development
 
@@ -146,6 +154,16 @@ Rules:
 - **Never force-push** to `dev`. Force-push is allowed only on your own feature/fix branch before review.
 - **Production promotion** (`dev → master`) is handled by `/orch-po` — it bundles Ready To Deploy stories into a release branch, PRs to master, and deploys to production.
 
+## Relational Database Skill (PostgreSQL / MySQL / SQLite / ORM)
+
+When `database.primary` or `database.localOffline` in `project-config.json` is a relational database (PostgreSQL, MySQL, SQLite, SQLCipher, Supabase, PlanetScale, Cloud SQL), load `.github/skills/relational-db/SKILL.md` **before** designing schemas, writing migrations, or auditing database code:
+
+| Scenario | Reference to load (under `.github/skills/relational-db/`) |
+|----------|-----------------------------------------------------------|
+| Relational schema design (`tables` in `schema.yml`), RLS, triggers, testing | `SKILL.md` |
+| PostgreSQL Row-Level Security (`FORCE ROW LEVEL SECURITY`), `SET LOCAL`, `CHECK` / `GENERATED` columns, immutability triggers, PGlite tests | `references/postgres-rls-and-triggers.md` |
+| Hybrid ORM + raw SQL migrations (`Drizzle`, `Prisma`) & local encrypted SQLite (`SQLCipher`) | `references/orm-and-migrations.md` |
+
 ## Firebase Skills
 
 Firebase skills live in `.github/skills/firebase/skills/`. All agents MUST load the relevant skill via `read_file` on `.github/skills/firebase/skills/{skill-name}/SKILL.md` **before** working on Firebase-related tasks.
@@ -237,6 +255,20 @@ Rules:
 - **Write after.** When a fix or insight meets the "when to add an entry" criteria in `knowledge-base/README.md`, the owning agent appends a new file using the matching `TEMPLATE.md`.
 - **Be honest.** Workarounds, quarantined tests, and reverts are recorded with `fix_type: workaround` (or equivalent) so the debt stays visible.
 - **Cross-link.** Entries should link to related specs, GitHub issues, and other knowledge-base entries.
+
+## Path-Scoped Rules
+
+Each file in `.github/instructions/` has an `applyTo` glob in its frontmatter — consult the matching file before editing files of that type:
+
+| When editing… | Load |
+|---------------|------|
+| API routes (`**/api/**`) | `.github/instructions/api-routes.instructions.md` |
+| UI components (`components/**`) | `.github/instructions/components.instructions.md` |
+| Database / schema code | `.github/instructions/database.instructions.md` |
+| Auth / session / OAuth code | `.github/instructions/mock-auth.instructions.md` |
+| Spec files (`specs/**`) | `.github/instructions/specs.instructions.md` |
+| Styles (`*.css`, `*.scss`) | `.github/instructions/styling.instructions.md` |
+| Test files | `.github/instructions/test-safety.instructions.md` |
 
 ## Mock Auth & Multi-Role Testing
 

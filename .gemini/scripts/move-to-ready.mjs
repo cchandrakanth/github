@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Moves GitHub Projects v2 issue card to the Ready column.
- * Usage: GITHUB_TOKEN=ghp_xxx node .github/scripts/move-to-ready.mjs
+ * Usage: GITHUB_TOKEN=ghp_xxx node .gemini/scripts/move-to-ready.mjs
  *
  * Requires a classic PAT with `project` scope:
  *   https://github.com/settings/tokens/new
@@ -17,7 +17,7 @@ if (!token) {
   console.error("❌ GITHUB_TOKEN env var is not set.");
   console.error("   Create a classic PAT at https://github.com/settings/tokens/new");
   console.error("   with the `project` scope, then run:");
-  console.error("   GITHUB_TOKEN=ghp_xxx node .github/scripts/move-to-ready.mjs");
+  console.error("   GITHUB_TOKEN=ghp_xxx node .gemini/scripts/move-to-ready.mjs");
   process.exit(1);
 }
 

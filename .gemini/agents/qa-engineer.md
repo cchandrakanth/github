@@ -12,6 +12,7 @@ Before writing tests, read `project-config.json` at the repo root. Use its value
 - Use the unit test framework from `testing.unitFramework`
 - Use the E2E test framework from `testing.e2eFramework`
 - Use the component test framework from `testing.componentFramework`
+- Use the database integration engine from `testing.dbIntegrationEngine` (when testing relational SQL invariants such as RLS, `CHECK` constraints, `GENERATED` columns, or triggers)
 - Write tests in `techStack.language`
 - Use file extensions from `conventions.fileExtensions`
 - Import using the alias from `conventions.importAlias`
@@ -35,6 +36,7 @@ You create and execute automated tests from spec `test.yml` files. You validate 
 2. Read `specs/{feature}/spec.md` for acceptance criteria
 3. Create test files following project test patterns
    - Writing e2e tests? Read `.gemini/skills/testing/references/locators.md` **before writing any locator**, and `.gemini/skills/testing/references/playwright.md` for config, `storageState` auth, and flake triage
+   - If `test.yml` includes `db_integration_tests`: load `.gemini/skills/relational-db/SKILL.md` and run database invariant tests (RLS cross-tenant negative tests, `CHECK` constraints, `GENERATED` columns, triggers) against `testing.dbIntegrationEngine` without mocking the database
 4. If `test.yml` has `role_tests.enabled: true`:
    - Import mock auth helpers from `__tests__/helpers/mock-auth.ts`
    - Create role-based access tests from the `access_matrix`

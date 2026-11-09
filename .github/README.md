@@ -85,7 +85,7 @@ Ask any GitHub-connected agent directly:
 | `agents/` | 14 agent definitions | Role-based development agents |
 | `instructions/` | 7 instruction files | File-specific coding standards |
 | `prompts/` | 14 prompt templates | Common development workflows (8 task prompts + 6 orchestrators) |
-| `skills/` | 10 skill packages | Deep domain knowledge (spec-management, testing, security-review, performance, firebase, playwright-cli, mongodb, aws, azure, gcp) |
+| `skills/` | 11 skill packages | Deep domain knowledge (spec-management, relational-db, testing, security-review, performance, firebase, playwright-cli, mongodb, aws, azure, gcp) |
 | `setup/` | `mcp.json` template | GitHub MCP server config — copy to `.vscode/` |
 
 > **Note:** `knowledge-base/` is installed at the **project root** (not inside `.github/`). This keeps it project-specific and out of the shared kit. See [Knowledge Base](#knowledge-base) below.
@@ -138,13 +138,13 @@ The single source of truth for all project settings. Every agent, instruction, a
 | Config Section | Keys | Purpose |
 |---------------|------|---------|
 | `project` | `name`, `description` | Project identity and org intent |
-| `techStack` | `language`, `frontend`, `mobile`, `backend`, `serverless` | Core technology choices |
-| `database` | `primary`, `orm`, `dataPattern`, `caching` | Data layer configuration |
+| `techStack` | `language`, `frontend`, `mobile`, `desktop`, `backend`, `serverless` | Core technology choices |
+| `database` | `primary`, `localOffline`, `orm`, `dataPattern`, `caching` | Data layer configuration |
 | `auth` | `provider`, `sessionMechanism` | Authentication setup |
 | `ui` | `framework`, `responsiveTarget`, `designSystem` | UI/styling choices |
 | `hosting` | `platform`, `cicd`, `monorepo` | Deployment configuration |
-| `testing` | `unitFramework`, `e2eFramework`, `componentFramework` | Test tooling |
-| `conventions` | `importAlias`, `sourceDirectory`, `fileExtensions` | Code conventions |
+| `testing` | `unitFramework`, `e2eFramework`, `componentFramework`, `dbIntegrationEngine` | Test tooling |
+| `conventions` | `packageManager`, `importAlias`, `sourceDirectory`, `workspaces`, `nativeBindingsAllowlist`, `fileExtensions` | Code conventions |
 | `architecture` | `patterns`, `codingStandards`, `securityRules`, `performanceTargets` | Rules (arrays of strings) |
 | `knowledgeBase` | `enabled`, `rootPath`, `paths`, `rules` | Knowledge-base location and read-first / write-after rules |
 | `fileStructure` | *(string)* | Project directory tree |

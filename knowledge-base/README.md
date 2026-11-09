@@ -1,6 +1,6 @@
 # Knowledge Base
 
-Durable, greppable project knowledge. Lives at the **project root** (never inside `.github/` or `.claude/`) so both toolchains and all agents share one store.
+Durable, greppable project knowledge. Lives at the **project root** so all agents share one store.
 
 ## Layout
 
@@ -29,4 +29,4 @@ Add an entry when the insight would save a future agent or developer real time:
 - The failure will plausibly recur elsewhere in the codebase
 - A workaround or quarantine leaves debt that must stay visible
 
-Skip entries for trivial typos, one-line obvious fixes, or knowledge already captured in `project-config.json`, `CLAUDE.md`, or an existing entry (update that entry instead).
+Skip entries for trivial typos, one-line obvious fixes, or knowledge already captured in `project-config.json` or an existing entry (update that entry instead).

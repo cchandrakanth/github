@@ -26,14 +26,16 @@ Ask these questions in order. Skip any that already have values in `project-conf
 - **Frontend framework**: Next.js (App Router) / Next.js (Pages) / Nuxt / SvelteKit / Remix / React SPA / Angular / None
 - **Language**: TypeScript / JavaScript / Python / Go / Rust
 - **Mobile**: React Native / Flutter / Expo / None
+- **Desktop**: Electron / Tauri / None
 - **Backend**: Next.js API Routes / Express / FastAPI / Django / NestJS / Go / Serverless Functions / None (frontend only)
-- **Serverless**: Google Cloud Functions / AWS Lambda / Azure Functions / None
+- **Serverless**: Google Cloud Run / Google Cloud Functions / AWS Lambda / Azure Functions / None
 
 ### 3. Database & Data
 - **Primary database**: Cloud Firestore / PostgreSQL / MongoDB / MySQL / Supabase / PlanetScale / SQLite / None
+- **Local / offline database**: SQLite / SQLCipher / WatermelonDB / IndexedDB / None
 - **ORM/Client**: Prisma / Drizzle / Mongoose / Firebase Admin / SQLAlchemy / None
-- **Data pattern**: Per-user isolation / Multi-tenant / Shared / None
-- **Caching**: localStorage-first / Redis / None
+- **Data pattern**: Per-user isolation (RLS) / Multi-tenant / Shared / None
+- **Caching**: localStorage-first / IndexedDB / Redis / None
 
 ### 4. Authentication
 - **Auth provider**: Firebase Auth / NextAuth / Clerk / Auth0 / Supabase Auth / Custom JWT / None
@@ -54,10 +56,13 @@ Ask these questions in order. Skip any that already have values in `project-conf
 - **Unit tests**: Vitest / Jest / Pytest / Go test / None yet
 - **E2E tests**: Playwright / Cypress / None yet
 - **Component tests**: React Testing Library / Storybook / None
+- **DB integration engine** (for SQL/RLS/trigger tests): PGlite / SQLite in-memory / Testcontainers / None
 
 ### 8. Path Conventions
 - **Import alias**: `@/` / `~/` / `src/` / None
-- **File structure**: Describe your `app/` or `src/` layout (or say "default")
+- **Workspaces / Monorepo apps** (optional): Map of apps and shared packages when using Turborepo/Nx
+- **Native bindings allowlist** (optional): Native C++/N-API/Rust addons or drivers that should never be auto-pruned
+- **File structure**: Describe your `app/`, `apps/`, or `src/` layout (or say "default")
 
 ### 9. GitHub Integration
 - **Repository** (`owner/repo-name`): e.g., `acme/mobile-app`
@@ -77,9 +82,11 @@ Write all answers into the config file, mapping questions to config keys:
 | Frontend framework | `techStack.frontend` |
 | Language | `techStack.language` |
 | Mobile | `techStack.mobile` |
+| Desktop | `techStack.desktop` |
 | Backend | `techStack.backend` |
 | Serverless | `techStack.serverless` |
 | Primary database | `database.primary` |
+| Local / offline database | `database.localOffline` |
 | ORM/Client | `database.orm` |
 | Data pattern | `database.dataPattern` |
 | Caching | `database.caching` |
@@ -94,9 +101,12 @@ Write all answers into the config file, mapping questions to config keys:
 | Unit tests | `testing.unitFramework` |
 | E2E tests | `testing.e2eFramework` |
 | Component tests | `testing.componentFramework` |
+| DB integration engine | `testing.dbIntegrationEngine` |
 | Package manager | `conventions.packageManager` |
 | Import alias | `conventions.importAlias` |
 | Source directory | `conventions.sourceDirectory` |
+| Workspaces / Monorepo apps | `conventions.workspaces` |
+| Native bindings allowlist | `conventions.nativeBindingsAllowlist` |
 | File extensions | `conventions.fileExtensions` |
 | GitHub repository | `github.repository` |
 | GitHub project number | `github.projectNumber` |

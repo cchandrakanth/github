@@ -15,6 +15,10 @@ Before reviewing, read `project-config.json` at the repo root. Use its values to
 - Security rules from `architecture.securityRules` are enforced
 - Performance targets from `architecture.performanceTargets` are met
 
+## Relational Database Skill
+
+When reviewing relational database schemas, migrations, or queries (`database.primary` or `database.localOffline` is PostgreSQL, MySQL, SQLite, SQLCipher, Supabase, or Cloud SQL), load `.github/skills/relational-db/SKILL.md` to verify ORM models and SQL migrations match `specs/{feature}/schema.yml` (including RLS policies, `CHECK` constraints, `GENERATED ALWAYS` columns, indexes, and triggers).
+
 ## Firebase Skills
 
 When reviewing Firebase-related code, load the relevant skill to apply correct conventions:

@@ -17,6 +17,6 @@ Set up the development framework for this project.
 6. Generate baseline tooling config that doesn't exist yet: `tsconfig.json` paths for `conventions.importAlias`, `.env.example` (including the mock-auth vars), `.gitignore`, unit/e2e test configs, `package.json` scripts, and a CI workflow when `hosting.cicd` is GitHub Actions
 7. Verify `knowledge-base/` exists at the **project root** with the three subfolders + READMEs + TEMPLATEs (do not pre-fill entries)
 8. Remind the user to copy `.claude/.mcp.json.example` to `.mcp.json` and provide a GitHub PAT (`repo`, `project`, `read:org`)
-9. Run the lint and unit-test scripts plus `.github/scripts/validate-config.sh` once to verify the scaffold, then print a summary: config values, paths created, packages installed (and any that failed), check results, and next steps
+9. Run the lint and unit-test scripts plus `.claude/scripts/validate-config.sh` once to verify the scaffold, then print a summary: config values, paths created, packages installed (and any that failed), check results, and next steps
 
 Start by reading `project-config.json`, then ask: "Let's set up your project. What's the project name and what does it do?"

@@ -37,10 +37,11 @@ Before approving any test implementation, verify:
 
 - Test files isolated to `**/*.test.*`, `**/*.spec.*`, or `**/__tests__/**`
 - Production code does NOT import from test files
-- All external calls (HTTP, DB, file I/O) are mocked
+- External network/HTTP calls and third-party APIs are mocked
+- Database-level invariant tests (RLS, `CHECK` constraints, `GENERATED` columns, triggers) use an isolated in-memory or ephemeral test engine (`testing.dbIntegrationEngine`) rather than mocking SQL execution
 - All test credentials use `@mock.test` domain only
 - Test packages are in `devDependencies` only
-- Database ops use `__test_`-prefixed tables or in-memory DB
+- Database ops use `__test_`-prefixed tables/schemas or in-memory DB (`testing.dbIntegrationEngine`)
 - Mock auth is gated by `MOCK_AUTH_ENABLED=true` AND `NODE_ENV !== 'production'`
 
 ### Escalate for Manual Review If

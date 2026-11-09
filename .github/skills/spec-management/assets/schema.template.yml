@@ -1,18 +1,74 @@
-# {Feature Name} — Database Schema
-# Defines database collections/tables, document/row shapes, indexes, and access rules
+# {Feature Name} — Database, API & IPC Schema
+# Supports Relational SQL tables (PostgreSQL/MySQL/SQLite DDL, RLS, CHECK, GENERATED columns, triggers)
+# AND Document/NoSQL collections (Firestore/MongoDB), plus OpenAPI routes and optional IPC/WebSocket channels.
+# Use the sections that match `database.primary` and `techStack.*` in `project-config.json` (mark unused sections N/A).
 
 feature: "{feature-name}"
 spec_ref: "specs/{feature-name}/spec.md"
 
+# ---------------------------------------------------------------------------
+# 1. Relational / SQL Database Tables (PostgreSQL, MySQL, SQLite, Supabase)
+# ---------------------------------------------------------------------------
+tables:
+  - schema: "{public | app_schema}"
+    name: "{table_name}"
+    description: "{What this table stores}"
+    rls_enabled: true
+    rls_forced: true
+    rls_policy_sql: |
+      -- Define Row-Level Security policy when per-user / per-tenant isolation is required
+      CREATE POLICY {policy_name} ON {schema}.{table_name}
+        USING (user_id = current_setting('app.current_user_id', true)::UUID);
+
+    columns:
+      - name: "id"
+        sql_type: "UUID PRIMARY KEY DEFAULT gen_random_uuid()"
+        required: true
+        description: "Primary key"
+      - name: "user_id"
+        sql_type: "UUID NOT NULL"
+        required: true
+        references: "{schema}.{users_table}(id) ON DELETE CASCADE"
+        description: "Owning user/tenant ID for isolation"
+      - name: "{field_name}"
+        sql_type: "{VARCHAR(128) | TEXT | INTEGER | NUMERIC(10,2) | BOOLEAN | JSONB | TIMESTAMPTZ}"
+        required: true
+        default: "{optional default}"
+        generated_always_sql: "{Optional: GENERATED ALWAYS AS (...) STORED}"
+        check_constraint_sql: "{Optional: CHECK (...)}"
+        description: "{What this column stores}"
+      - name: "created_at"
+        sql_type: "TIMESTAMPTZ NOT NULL DEFAULT NOW()"
+        required: true
+        description: "Creation timestamp"
+      - name: "updated_at"
+        sql_type: "TIMESTAMPTZ NOT NULL DEFAULT NOW()"
+        required: true
+        description: "Last update timestamp"
+
+    indexes:
+      - name: "idx_{table_name}_{cols}"
+        columns: ["{col1}", "{col2}"]
+        unique: false
+        where_clause: "{Optional partial index predicate, e.g. WHERE deleted_at IS NULL}"
+        purpose: "{What query this index supports}"
+
+    triggers_sql: |
+      -- Optional: Database triggers (e.g. updated_at auto-touch, audit log, or WORM/immutability lock)
+      -- BEFORE UPDATE OR DELETE ON {schema}.{table_name} FOR EACH ROW EXECUTE FUNCTION {fn_name}();
+
+# ---------------------------------------------------------------------------
+# 2. Document / NoSQL Collections (Firestore, MongoDB — omit or mark N/A if SQL-only)
+# ---------------------------------------------------------------------------
 collections:
-  - path: "{collection_or_table_path}"
-    description: "{What this collection/table stores}"
+  - path: "{collection_path}"
+    description: "{What this collection stores}"
     document:
       fields:
         - name: "id"
           type: "string"
           required: true
-          description: "Document/row ID"
+          description: "Document ID"
         - name: "createdAt"
           type: "timestamp"
           required: true
@@ -21,7 +77,6 @@ collections:
           type: "timestamp"
           required: true
           description: "Last update timestamp"
-        # Add feature-specific fields below:
         - name: "{fieldName}"
           type: "{string|number|boolean|timestamp|array|map}"
           required: true
@@ -34,35 +89,51 @@ collections:
         purpose: "{What query this index supports}"
 
     access_rules: |
-      # Define access control rules for this collection/table
+      # Define access control rules for this collection
       # Example: Only authenticated user who owns the document can read/write
 
-# Changes to existing collections/tables (if any):
+# ---------------------------------------------------------------------------
+# 3. Modifications to Existing Tables / Collections (if any)
+# ---------------------------------------------------------------------------
 modifications:
-  - collection: "{existing_collection}"
+  - target: "{schema.existing_table_or_collection}"
+    migration_sql: |
+      -- For SQL databases: exact ALTER TABLE / CREATE INDEX statement
+      ALTER TABLE {schema}.{existing_table} ADD COLUMN IF NOT EXISTS {new_col} {sql_type};
     changes:
       - action: "add_field"
         field:
           name: "{newFieldName}"
-          type: "{type}"
+          type: "{type_or_sql_type}"
           required: false
           default: null
           description: "{Why this field is being added}"
-        migration: "{How to handle existing documents/rows without this field}"
+        migration: "{How to backfill or handle existing rows/documents}"
 
-# API routes that interact with this schema.
-# Each entry must have a matching operation in the OpenAPI contract (openapi.yaml),
-# authored BEFORE the handler code — see instructions/api-routes.instructions.md.
+# ---------------------------------------------------------------------------
+# 4. API Routes (must have matching operationId in root openapi.yaml)
+# ---------------------------------------------------------------------------
 api_routes:
   - method: "GET"
     path: "/api/{resource}"
     operation_id: "{getResource}"      # must match operationId in openapi.yaml
     contract: "openapi.yaml"
-    reads_from: "{collection/table}"
+    workspace: "{Optional: app/service name in monorepo}"
+    reads_from: "{schema.table_or_collection}"
     description: "{What this route returns}"
   - method: "POST"
     path: "/api/{resource}"
     operation_id: "{createResource}"
     contract: "openapi.yaml"
-    writes_to: "{collection/table}"
+    workspace: "{Optional: app/service name in monorepo}"
+    writes_to: "{schema.table_or_collection}"
     description: "{What this route creates/updates}"
+
+# ---------------------------------------------------------------------------
+# 5. Local IPC / Worker / WebSocket Channels (Optional — for Desktop/Mobile/Realtime)
+# ---------------------------------------------------------------------------
+ipc_channels: []
+  # - channel: "{namespace:action}"
+  #   direction: "{renderer-to-main | renderer-to-utility-process | server-to-client}"
+  #   payload_type: "{JSON | Float32Array | ArrayBuffer}"
+  #   cleanup_rule: "{Optional resource/memory cleanup invariant}"

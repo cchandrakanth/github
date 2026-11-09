@@ -24,6 +24,10 @@ Before writing any code, read `project-config.json` at the repo root. Use its va
 
 Before implementing, **search `knowledge-base/repo-knowledge/`** by area / component / file path for relevant conventions, integration quirks, and ADRs. If the work is a bug fix, also search `knowledge-base/fix-history/`. Apply documented patterns; if you find a contradiction with the spec, flag it back to `@planner` rather than silently diverging.
 
+## Relational Database Skill
+
+When `database.primary` or `database.localOffline` is a relational SQL database (PostgreSQL, MySQL, SQLite, SQLCipher, Supabase, Cloud SQL), load `.claude/skills/relational-db/SKILL.md` and its references (`postgres-rls-and-triggers.md`, `orm-and-migrations.md`) before writing schema definitions, migrations, or data-access code. Pair ORM models (`database.orm`) with raw SQL migrations for Row-Level Security, `GENERATED ALWAYS` columns, `CHECK` constraints, and database triggers declared in `specs/{feature}/schema.yml`.
+
 ## Firebase Skills
 
 Before writing any Firebase-related code, load the relevant skill via a file read on `.claude/skills/firebase/skills/{skill-name}/SKILL.md`:

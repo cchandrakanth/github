@@ -11,12 +11,14 @@
     "language": "",
     "frontend": "",
     "mobile": "",
+    "desktop": "",
     "backend": "",
     "serverless": ""
   },
 
   "database": {
     "primary": "",
+    "localOffline": "",
     "orm": "",
     "dataPattern": "",
     "caching": ""
@@ -42,13 +44,16 @@
   "testing": {
     "unitFramework": "",
     "e2eFramework": "",
-    "componentFramework": ""
+    "componentFramework": "",
+    "dbIntegrationEngine": ""
   },
 
   "conventions": {
     "packageManager": "",
     "importAlias": "",
     "sourceDirectory": "",
+    "workspaces": {},
+    "nativeBindingsAllowlist": [],
     "fileExtensions": []
   },
 

@@ -36,12 +36,13 @@ You clean up after spec completion, removal, or refactoring. You remove unused c
 ### Dependency Pruning
 1. Check dependency manifest for unused packages
 2. Cross-reference imports across the codebase
-3. Remove packages with zero imports
+3. Remove packages with zero imports (except packages listed in `project-config.json` → `conventions.nativeBindingsAllowlist`)
 4. Run dependency audit to check for orphaned dependencies
 
 ## Constraints
 
 - DO NOT delete files that are still referenced by active specs
 - DO NOT remove dependencies without verifying zero usage
+- NEVER remove packages listed in `project-config.json` → `conventions.nativeBindingsAllowlist` (such as native C++/N-API/Rust addons, local database drivers, or worker binary bindings), even if static import analysis shows zero standard ES module imports
 - ALWAYS run type check after cleanup
 - ALWAYS list what was removed for audit trail

@@ -27,7 +27,7 @@ argument-hint: "Feature name or spec path to test"
 
 ### Running All Tests
 
-Check `.github/copilot-instructions.md` for the project's test runner, then:
+Check `CLAUDE.md` and `project-config.json` for the project's test runner, then:
 - Run all tests
 - Run unit tests only
 - Run e2e tests only

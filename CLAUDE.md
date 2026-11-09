@@ -1,25 +1,23 @@
 # Project Instructions (Claude Code)
 
-> This repo is dual-tooled: it works with **GitHub Copilot** (`.github/`) and **Claude Code** (`.claude/` + this file). Both toolchains share the same source of truth: **`project-config.json`**.
-> Agents, commands, and skills MUST read `project-config.json` to resolve technology choices, conventions, and project metadata. Do not hardcode technology-specific values — always derive them from the config.
+> **All project-specific values are defined in `project-config.json` at the repo root.**
+> Agents, commands, instructions, and skills MUST read `project-config.json` to resolve technology choices, conventions, and project metadata. Do not hardcode technology-specific values — always derive them from the config.
 
-## Where things live (Claude Code)
+## Where things live
 
-| Artifact | Location | Copilot equivalent |
-|----------|----------|--------------------|
-| Project memory | `CLAUDE.md` (this file) | `.github/copilot-instructions.md` |
-| Subagents | `.claude/agents/*.md` | `.github/agents/*.agent.md` |
-| Slash commands | `.claude/commands/*.md` | `.github/prompts/*.prompt.md` |
-| Skills | `.claude/skills/**/SKILL.md` | `.github/skills/**/SKILL.md` |
-| Path-scoped rules | `.claude/instructions/*.instructions.md` | `.github/instructions/*.instructions.md` |
-| MCP config | `.claude/.mcp.json.example` → copy to `.mcp.json` | `.github/mcp.json.example` → copy to `.vscode/mcp.json` |
-| Config (shared) | `project-config.json` (**repo root**) | `project-config.json` (**repo root**) |
-| Knowledge base (shared) | `knowledge-base/` (**repo root**) | `knowledge-base/` (**repo root**) |
-| Spec templates | `.claude/skills/spec-management/assets/` | `.github/skills/spec-management/assets/` |
+| Artifact | Location |
+|----------|----------|
+| Project memory / Rules | `CLAUDE.md` (this file, at repo root) |
+| Subagents / Roles | `.claude/agents/*.md` |
+| Slash commands | `.claude/commands/*.md` |
+| Skills | `.claude/skills/**/SKILL.md` |
+| Path-scoped rules | `.claude/instructions/*.instructions.md` |
+| MCP config | `.claude/.mcp.json.example` → copy to `.mcp.json` |
+| Config | `project-config.json` (**repo root**) |
+| Knowledge base | `knowledge-base/` (**repo root**) |
+| Spec templates | `.claude/skills/spec-management/assets/` |
 
-Both trees are kept in sync — edit the Copilot source and re-run the conversion, or edit both.
-
-> **Root-level artifacts:** `project-config.json` and `knowledge-base/` live at the **project root** — never inside `.github/` or `.claude/`. Do not move them back, and always reference them by root-relative path.
+> **Root-level artifacts:** `project-config.json` and `knowledge-base/` live at the **project root** — never inside `.claude/`. Do not move them back, and always reference them by root-relative path.
 
 ## Organization Intent
 
@@ -27,26 +25,34 @@ Read from `project-config.json` → `project.name` and `project.description`.
 
 ## Tech Stack
 
-Read from `project-config.json` → `techStack.*`, `database.*`, `auth.*`, `ui.*`, `hosting.*`, `testing.*`.
+Read from `project-config.json` → `techStack.*`, `database.*`, `auth.*`, `ui.*`, `hosting.*`, `testing.*`, `conventions.*`.
 
 | Layer | Config Key |
 |-------|-----------|
 | Language | `techStack.language` |
 | Frontend | `techStack.frontend` |
 | Mobile | `techStack.mobile` |
+| Desktop | `techStack.desktop` |
 | Backend | `techStack.backend` |
 | Serverless | `techStack.serverless` |
-| Database | `database.primary` |
+| Database (Primary) | `database.primary` |
+| Database (Local / Offline) | `database.localOffline` |
 | ORM / Client | `database.orm` |
+| Data Pattern / Isolation | `database.dataPattern` |
+| Caching | `database.caching` |
 | Auth | `auth.provider` |
 | Session | `auth.sessionMechanism` |
 | UI Framework | `ui.framework` |
 | Design System | `ui.designSystem` |
 | Hosting | `hosting.platform` |
 | CI/CD | `hosting.cicd` |
+| Monorepo | `hosting.monorepo` |
 | Unit Tests | `testing.unitFramework` |
 | E2E Tests | `testing.e2eFramework` |
 | Component Tests | `testing.componentFramework` |
+| DB Integration Engine | `testing.dbIntegrationEngine` |
+| Workspaces / Apps | `conventions.workspaces` |
+| Native Bindings Allowlist | `conventions.nativeBindingsAllowlist` |
 
 ## Development Process: Spec-Driven Development
 
@@ -162,6 +168,16 @@ Rules:
 - **Never force-push** to `dev`. Force-push is allowed only on your own feature/fix branch before review.
 - **Production promotion** (`dev → master`) is handled by `/orch-po` — it bundles Ready To Deploy stories into a release branch, PRs to master, and deploys to production.
 
+## Relational Database Skill (PostgreSQL / MySQL / SQLite / ORM)
+
+When `database.primary` or `database.localOffline` in `project-config.json` is a relational database (PostgreSQL, MySQL, SQLite, SQLCipher, Supabase, PlanetScale, Cloud SQL), load `.claude/skills/relational-db/SKILL.md` **before** designing schemas, writing migrations, or auditing database code:
+
+| Scenario | Reference to load (under `.claude/skills/relational-db/`) |
+|----------|-----------------------------------------------------------|
+| Relational schema design (`tables` in `schema.yml`), RLS, triggers, testing | `SKILL.md` |
+| PostgreSQL Row-Level Security (`FORCE ROW LEVEL SECURITY`), `SET LOCAL`, `CHECK` / `GENERATED` columns, immutability triggers, PGlite tests | `references/postgres-rls-and-triggers.md` |
+| Hybrid ORM + raw SQL migrations (`Drizzle`, `Prisma`) & local encrypted SQLite (`SQLCipher`) | `references/orm-and-migrations.md` |
+
 ## Firebase Skills
 
 Firebase skills live in `.claude/skills/firebase/skills/`. Load the relevant skill via a file read on `.claude/skills/firebase/skills/{skill-name}/SKILL.md` **before** working on Firebase-related tasks.
@@ -240,7 +256,7 @@ Official cloud-provider agent skills for app development live under `.claude/ski
 
 ## Knowledge Base (read-first / write-after)
 
-`knowledge-base/` lives at the **project root** (not inside `.github/` or `.claude/`). Agents MUST consult it before non-trivial work and contribute back after.
+`knowledge-base/` lives at the **project root** (not inside `.claude/`). Agents MUST consult it before non-trivial work and contribute back after.
 
 | Folder | Read before… | Written by |
 |--------|--------------|------------|
@@ -256,7 +272,7 @@ Rules:
 
 ## Path-Scoped Rules
 
-`.claude/instructions/` mirrors `.github/instructions/`. Each file has an `applyTo` glob in its frontmatter — consult the matching file before editing files of that type:
+Each file in `.claude/instructions/` has an `applyTo` glob in its frontmatter — consult the matching file before editing files of that type:
 
 | When editing… | Load |
 |---------------|------|

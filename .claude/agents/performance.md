@@ -16,6 +16,10 @@ Before auditing, read `project-config.json` at the repo root. Use its values to:
 - Apply hosting-specific guidance for `hosting.platform`
 - Use targets from `architecture.performanceTargets` (or defaults if empty)
 
+## Relational Database Skill
+
+When auditing SQL query performance (`database.primary` or `database.localOffline` is PostgreSQL, MySQL, SQLite, Supabase, or Cloud SQL), load `.claude/skills/relational-db/SKILL.md` first — verify composite/partial index coverage, connection-pool transaction scoping, and N+1 query elimination.
+
 ## MongoDB Skills
 
 When auditing MongoDB query performance (`database.primary` is MongoDB), load `.claude/skills/mongodb/skills/mongodb-query-optimizer/SKILL.md` first — explain plans, index strategy, Performance Advisor. For connection-pool or latency issues also consult `.claude/skills/mongodb/skills/mongodb-connection/SKILL.md`.

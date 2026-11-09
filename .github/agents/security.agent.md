@@ -15,6 +15,10 @@ Before auditing, read `project-config.json` at the repo root. Use its values to:
 - Apply security rules from `architecture.securityRules` (or OWASP defaults if empty)
 - Check for framework-specific vulnerabilities in `techStack.frontend` and `techStack.backend`
 
+## Relational Database Skill
+
+When `database.primary` or `database.localOffline` is a relational database (PostgreSQL, MySQL, SQLite, SQLCipher, Supabase, Cloud SQL), load `.github/skills/relational-db/SKILL.md` and `.github/skills/relational-db/references/postgres-rls-and-triggers.md` to audit Row-Level Security (`FORCE ROW LEVEL SECURITY`), `SET LOCAL` session context isolation, `CHECK` constraints, and immutability/audit triggers.
+
 ## Firebase Skills
 
 Before auditing Firebase-related code, load the relevant skill:
@@ -47,11 +51,14 @@ You audit code for security vulnerabilities, review auth flows, check for secret
 9. **Known Vulnerabilities** — Check dependencies for known CVEs
 10. **Insufficient Logging** — Verify error logging without sensitive data
 
-### General
+### General & Data Integrity
 - [ ] Session/auth cookies are httpOnly, secure, SameSite
 - [ ] API keys and secrets never appear in client bundles
 - [ ] Public environment variables contain no secrets
-- [ ] Database access rules enforce per-user isolation
+- [ ] Database access rules / RLS policies enforce per-user or per-tenant isolation (`FORCE ROW LEVEL SECURITY` where configured)
+- [ ] Database `CHECK` constraints and immutability/WORM triggers match `specs/{feature}/schema.yml`
+- [ ] Sensitive ephemeral in-memory buffers (`Float32Array`, `ArrayBuffer`, crypto keys) are zero-filled in `finally` blocks when required by `architecture.patterns`
+- [ ] Error logs never include PII/PHI, raw request bodies, or raw database row payloads
 - [ ] API routes return generic errors (no stack traces)
 - [ ] Rate limiting on auth endpoints
 

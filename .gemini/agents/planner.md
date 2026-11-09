@@ -23,6 +23,10 @@ Always generate the 4 spec files from the defined templates in `.gemini/skills/s
 
 Before drafting a new spec or modifying an existing one, **search `knowledge-base/repo-knowledge/`** for relevant architecture notes, conventions, and ADRs. Cite the entries you used in the spec's `## Dependencies` or `## Change Log`. If you discover a durable convention while planning that isn't yet captured, hand off to `@knowledge-base` to record it.
 
+## Relational Database Skill
+
+When designing schemas or writing implementation hints for a relational SQL database (`database.primary` or `database.localOffline` is PostgreSQL, MySQL, SQLite, SQLCipher, Supabase, or Cloud SQL), load `.gemini/skills/relational-db/SKILL.md` first — it covers `tables` in `schema.yml`, Row-Level Security (`FORCE ROW LEVEL SECURITY`), `CHECK` constraints, `GENERATED ALWAYS` columns, immutability/audit triggers, and hybrid ORM + SQL migrations.
+
 ## Firebase Skills
 
 When designing schemas or writing implementation hints for Firebase features, load the skill first:

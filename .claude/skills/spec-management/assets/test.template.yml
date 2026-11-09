@@ -24,6 +24,27 @@ unit_tests:
       - action: "Call {function} with {input}"
         expected: "{expected output}"
 
+# Relational Database Invariant Tests (RLS, CHECK constraints, GENERATED columns, Triggers)
+# Uses `testing.dbIntegrationEngine` from project-config.json (e.g., PGlite, SQLite in-memory, or local test container).
+# Set to `[]` if feature has no database schema or invariants.
+db_integration_tests:
+  - id: DB-1
+    ac_ref: "AC-1.1"
+    description: "Cross-user / cross-tenant isolation negative test (RLS or query scope)"
+    engine: "{pglite | sqlite-memory | testcontainers}"
+    file: "__tests__/integration/{feature}.db.test.ts"
+    steps:
+      - action: "Seed row under user-11 (owner), switch session context to user-12 (different owner), run SELECT/UPDATE/DELETE"
+        expected: "SELECT returns 0 rows; UPDATE/DELETE affects 0 rows or raises access error"
+  - id: DB-2
+    ac_ref: "AC-1.2"
+    description: "Database CHECK constraint, GENERATED column, or immutability trigger validation"
+    engine: "{pglite | sqlite-memory | testcontainers}"
+    file: "__tests__/integration/{feature}.db.test.ts"
+    steps:
+      - action: "Attempt invalid INSERT/UPDATE violating CHECK constraint or immutability trigger"
+        expected: "Database raises constraint or trigger exception"
+
 integration_tests:
   - id: IT-1
     ac_ref: "AC-1.1"
