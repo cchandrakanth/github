@@ -151,18 +151,22 @@ Create in both modes:
 
 Greenfield only — create the directory tree from the `fileStructure` value you generated in Step 1, rooted at `conventions.sourceDirectory`. Add a `.gitkeep` to each empty directory. Typical shapes:
 
-| Stack (`techStack.frontend` / `techStack.backend`) | Directories |
+| Stack (`techStack.frontend` / `techStack.mobile` / `techStack.backend`) | Directories (Single-App Default) |
 |---|---|
 | Next.js App Router | `app/`, `app/api/`, `components/ui/`, `lib/`, `hooks/`, `types/`, `styles/`, `public/` |
 | React SPA (Vite) | `src/components/`, `src/pages/`, `src/lib/`, `src/hooks/`, `src/types/` |
+| Angular | `src/app/core/`, `src/app/shared/`, `src/app/features/`, `src/environments/`, `src/assets/` |
 | Nuxt / SvelteKit / Remix | framework default (`pages|routes/`, `components/`, `lib/`, `server/`) |
+| React Native / Expo (Mobile-only) | `app/` (or `src/screens/`), `src/components/`, `src/hooks/`, `src/services/`, `src/types/`, `assets/` |
+| Flutter (Mobile-only) | `lib/screens/`, `lib/widgets/`, `lib/services/`, `lib/models/`, `test/` |
+| Serverless Functions (Backend-only) | `src/functions/` (or `handlers/`), `src/services/`, `src/lib/`, `src/types/`, `infra/` |
 | Express / NestJS | `src/routes/`, `src/controllers/`, `src/services/`, `src/models/`, `src/middleware/` |
 | FastAPI / Django | `app/api/`, `app/models/`, `app/services/`, `app/core/`, `tests/` |
-| Go | `cmd/`, `internal/`, `pkg/`, `api/` |
+| Go / Rust | `cmd/`, `internal/`, `pkg/`, `api/` (Go) or `src/bin/`, `src/handlers/`, `src/models/` (Rust) |
 
-If `hosting.monorepo` is Turborepo/Nx, nest the app tree under `apps/{app-name}/` and add `packages/`.
+If `hosting.monorepo` is "No" or "None" (single-app project), leave `conventions.workspaces` as `{}` and place the directories directly at the root (`app/` or `src/`). If `hosting.monorepo` is Turborepo/Nx, nest each app tree under `apps/{app-name}/`, add `packages/`, and record them in `conventions.workspaces`.
 
-If a framework CLI is the idiomatic scaffold (`create-next-app`, `npm create vite`, `nest new`, `django-admin startproject`, `ng new`), **ask before running it** — it writes many files and may reformat the repo. Only run it into the current directory when there is no existing manifest.
+If a framework CLI is the idiomatic scaffold (`create-next-app`, `npx create-expo-app`, `npm create vite`, `ng new`, `nest new`, `django-admin startproject`), **ask before running it** — it writes many files and may reformat the repo. Only run it into the current directory when there is no existing manifest.
 
 ### Step 6: Install dependencies
 
@@ -176,12 +180,15 @@ Install only what the config actually names — never a superset:
 |--------------|----------|
 | `techStack.frontend` = Next.js | `next react react-dom` |
 | `techStack.frontend` = React SPA | `react react-dom` + dev `vite @vitejs/plugin-react` |
+| `techStack.frontend` = Angular | `@angular/core @angular/common @angular/router @angular/forms rxjs zone.js` + dev `@angular/cli @angular/compiler-cli` |
 | `techStack.frontend` = Nuxt / SvelteKit / Remix | `nuxt vue` / dev `@sveltejs/kit svelte vite` / `@remix-run/node @remix-run/react @remix-run/serve` |
+| `techStack.mobile` = React Native / Expo | `expo react react-native expo-router` (or scaffold via `npx create-expo-app`) |
 | `techStack.language` = TypeScript | dev `typescript @types/node` (+ `@types/react @types/react-dom` when React) |
 | `techStack.backend` = Express / NestJS | `express` (+ dev `@types/express`) / `@nestjs/core @nestjs/common rxjs` |
 | `techStack.backend` = FastAPI / Django | `fastapi uvicorn[standard]` / `django` |
-| `techStack.serverless` = Google Cloud Functions | `@google-cloud/functions-framework` |
+| `techStack.serverless` = Google Cloud Functions / Cloud Run | `@google-cloud/functions-framework` |
 | `techStack.serverless` = AWS Lambda | dev `@types/aws-lambda` + the `@aws-sdk/client-*` packages the feature needs |
+| `techStack.serverless` = Azure Functions | `@azure/functions` |
 | `database.orm` = Prisma | dev `prisma` + `@prisma/client`, then `prisma init` |
 | `database.orm` = Drizzle | `drizzle-orm` + dev `drizzle-kit` + driver (`pg` / `mysql2` / `better-sqlite3`) |
 | `database.orm` = Mongoose / SQLAlchemy | `mongoose` / `sqlalchemy alembic` |
